@@ -1,71 +1,105 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useAuthActions } from "@convex-dev/auth/react";
-import { useRouter } from "next/navigation";
+import { GitHubLogoIcon } from "@radix-ui/react-icons";
+import { toast, Toaster } from "sonner";
 import { useState } from "react";
 
-export default function SignIn() {
-  const { signIn } = useAuthActions();
-  const [flow, setFlow] = useState<"signIn" | "signUp">("signIn");
-  const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
+export default function SignInPage() {
+  const [step, setStep] = useState<"signIn" | "linkSent">("signIn");
+
   return (
-    <div className="flex flex-col gap-8 w-96 mx-auto h-screen justify-center items-center">
-      <p>Log in to see the numbers</p>
-      <form
-        className="flex flex-col gap-2"
-        onSubmit={(e) => {
-          e.preventDefault();
-          const formData = new FormData(e.target as HTMLFormElement);
-          formData.set("flow", flow);
-          void signIn("password", formData)
-            .catch((error) => {
-              setError(error.message);
-            })
-            .then(() => {
-              router.push("/");
-            });
-        }}
-      >
-        <input
-          className="bg-background text-foreground rounded-md p-2 border-2 border-slate-200 dark:border-slate-800"
-          type="email"
-          name="email"
-          placeholder="Email"
-        />
-        <input
-          className="bg-background text-foreground rounded-md p-2 border-2 border-slate-200 dark:border-slate-800"
-          type="password"
-          name="password"
-          placeholder="Password"
-        />
-        <button
-          className="bg-foreground text-background rounded-md"
-          type="submit"
-        >
-          {flow === "signIn" ? "Sign in" : "Sign up"}
-        </button>
-        <div className="flex flex-row gap-2">
-          <span>
-            {flow === "signIn"
-              ? "Don't have an account?"
-              : "Already have an account?"}
-          </span>
-          <span
-            className="text-foreground underline hover:no-underline cursor-pointer"
-            onClick={() => setFlow(flow === "signIn" ? "signUp" : "signIn")}
-          >
-            {flow === "signIn" ? "Sign up instead" : "Sign in instead"}
-          </span>
-        </div>
-        {error && (
-          <div className="bg-red-500/20 border-2 border-red-500/50 rounded-md p-2">
-            <p className="text-foreground font-mono text-xs">
-              Error signing in: {error}
-            </p>
-          </div>
+    <div className="flex min-h-screen w-full container my-auto mx-auto">
+      <div className="max-w-[384px] mx-auto flex flex-col my-auto gap-4 pb-8">
+        {step === "signIn" ? (
+          <>
+            <h2 className="font-semibold text-2xl tracking-tight">
+              Sign in to start studying!
+            </h2>
+            <SignInAsGuest />
+            <SignInWithGitHub />
+            <div className="flex items-center">
+              <div className="flex-grow border-t border-neutral-300"></div>
+              <span className="px-3 text-neutral-500 text-sm">Or continue with</span>
+              <div className="flex-grow border-t border-neutral-300"></div>
+            </div>
+            <SignInWithMagicLink handleLinkSent={() => setStep("linkSent")} />
+          </>
+        ) : (
+          <>
+            <h2 className="font-semibold text-2xl tracking-tight">
+              Check your email
+            </h2>
+            <p>A sign-in link has been sent to your email address.</p>
+            <Button
+              className="p-0 self-start"
+              variant="link"
+              onClick={() => setStep("signIn")}
+            >
+              Cancel
+            </Button>
+          </>
         )}
-      </form>
+      </div>
     </div>
+  );
+}
+
+function SignInWithGitHub() {
+  const { signIn } = useAuthActions();
+  return (
+    <Button
+      className="flex-1 hover:bg-neutral-100 active:bg-neutral-200 hover:text-black"
+      variant="outline"
+      type="button"
+      onClick={() => void signIn("github", { redirectTo: "/" })}
+    >
+      <GitHubLogoIcon className="mr-2 h-4 w-4" /> Sign in with GitHub
+    </Button>
+  );
+}
+
+function SignInAsGuest() {
+  const { signIn } = useAuthActions();
+  return (
+    <Button
+      className="flex-1 hover:bg-neutral-100 active:bg-neutral-200 hover:text-black"
+      variant="outline"
+      type="button"
+      onClick={() => void signIn("anonymous", { redirectTo: "/" })}
+    >
+      Continue as Guest
+    </Button>
+  );
+}
+
+function SignInWithMagicLink({
+  handleLinkSent,
+}: {
+  handleLinkSent: () => void;
+}) {
+  const { signIn } = useAuthActions();
+  return (
+    <form
+      className="flex flex-col"
+      onSubmit={(event) => {
+        event.preventDefault();
+        const formData = new FormData(event.currentTarget);
+        formData.set("redirectTo", "/");
+        signIn("resend", formData)
+          .then(handleLinkSent)
+          .catch((error) => {
+            console.error(error);
+            toast.error("Could not send sign-in link");
+          });
+      }}
+    >
+      <label htmlFor="email">Email</label>
+      <Input name="email" id="email" className="mb-4" autoComplete="email" />
+      <Button className="bg-black text-white active:bg-black/80 hover:bg-black/90" type="submit">Send sign-in link to email</Button>
+      <Toaster />
+    </form>
   );
 }
