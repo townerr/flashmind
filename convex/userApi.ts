@@ -15,11 +15,13 @@ export const getCurrentUser = query({
 
 export const createUserStudySession = mutation({
   args: {
-    userId: v.id("users"),
     studySession: v.object({
       topic: v.string(),
       totalCards: v.number(),
+      completedCards: v.number(),
+      correctAnswers: v.number(),
       cards: v.array(v.object({
+        id: v.optional(v.string()),
         question: v.string(),
         answer: v.string(),
         answeredCorrect: v.optional(v.boolean()),
@@ -27,11 +29,23 @@ export const createUserStudySession = mutation({
     }),
   },
   handler: async (ctx, args) => {
+    const currentUserId = await getAuthUserId(ctx);
+    if(!currentUserId) {
+      throw new Error("User does not exist");
+    }
+
+    const currentUser = await ctx.db.get(currentUserId);
+    if (currentUser?.isAnonymous) {
+      throw new Error("Guests are not authorized to save a study session");
+    }
+
     return await ctx.db.insert("studySessions", {
-      userId: args.userId,
+      userId: currentUserId,
       topic: args.studySession.topic,
       totalCards: args.studySession.totalCards,
       cards: args.studySession.cards,
+      completedCards: args.studySession.completedCards,
+      correctAnswers: args.studySession.correctAnswers,
     });
   },
 });
@@ -41,6 +55,30 @@ export const getUserStudySessions = query({
     userId: v.id("users"),
   },
   handler: async (ctx, args) => {
+    const currentUserId = await getAuthUserId(ctx);
+    if (currentUserId !== args.userId) {
+      throw new Error("Not authorized to get study sessions for this user");
+    }
+
     return await ctx.db.query("studySessions").withIndex("by_userId", (q) => q.eq("userId", args.userId)).collect();
+  },
+});
+
+export const deleteUserStudySession = mutation({
+  args: {
+    userId: v.id("users"),
+    studySessionId: v.id("studySessions"),
+  },
+  handler: async (ctx, args) => {
+    const currentUserId = await getAuthUserId(ctx);
+    if (currentUserId === null) {
+      throw new Error("User not authenticated");
+    }
+
+    if (currentUserId !== args.userId) {
+      throw new Error("User not authorized to delete this study session");
+    }
+
+    return await ctx.db.delete(args.studySessionId);
   },
 });

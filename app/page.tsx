@@ -17,6 +17,7 @@ export default function Home() {
     navigateCard,
     completeSession,
     resumeSession,
+    deleteSession,
   } = useStudySession();
 
   const user = useQuery(api.userApi.getCurrentUser);
@@ -26,9 +27,10 @@ export default function Home() {
       <div className="flex h-[calc(100vh-5rem)]">
         <Sidebar
           studySessions={studySessions}
-          currentSessionId={currentSession?.id}
+          currentSessionId={currentSession?.id || undefined}
           onCreateSession={createStudySession}
           onResumeSession={resumeSession}
+          onDeleteSession={deleteSession}
           userName={user?.username ?? "Guest"}
         />
 

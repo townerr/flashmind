@@ -2,7 +2,8 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { BookOpen } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { BookOpen, Trash2 } from "lucide-react";
 import StudySessionModal from "./StudySessionModal";
 import { StudySession } from "@/types/flashcard";
 
@@ -11,6 +12,7 @@ interface SidebarProps {
   currentSessionId?: string;
   onCreateSession: (topic: string, numCards: number) => Promise<void>;
   onResumeSession: (session: StudySession) => void;
+  onDeleteSession: (sessionId: string) => void;
   userName: string;
 }
 
@@ -19,8 +21,14 @@ export default function Sidebar({
   currentSessionId,
   onCreateSession,
   onResumeSession,
+  onDeleteSession,
   userName,
 }: SidebarProps) {
+  const handleDeleteSession = (e: React.MouseEvent, sessionId: string) => {
+    e.stopPropagation(); // Prevent triggering the card click
+    onDeleteSession(sessionId);
+  };
+
   return (
     <div className="w-80 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 p-6 overflow-y-auto h-full">
       <div className="flex items-center gap-2 mb-6">
@@ -49,9 +57,17 @@ export default function Sidebar({
               }`}
               onClick={() => onResumeSession(session)}
             >
-              <CardContent className="p-4">
+              <CardContent className="p-4 relative">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute top-2 right-2 h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50"
+                  onClick={(e) => handleDeleteSession(e, session.id)}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
                 <div className="flex justify-between items-start mb-2">
-                  <h4 className="font-medium text-gray-900 dark:text-white truncate">
+                  <h4 className="font-medium text-gray-900 dark:text-white truncate pr-8">
                     {session.topic}
                   </h4>
                   <span className="text-xs text-gray-500 dark:text-gray-400">

@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { StudySession, Flashcard } from "@/types/flashcard";
+import { useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 export function useStudySession() {
   const [studySessions, setStudySessions] = useState<StudySession[]>([]);
@@ -9,6 +11,7 @@ export function useStudySession() {
     null,
   );
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
+  const saveStudySession = useMutation(api.userApi.createUserStudySession);
 
   const generateFlashcards = async (
     topic: string,
@@ -28,19 +31,29 @@ export function useStudySession() {
 
   const createStudySession = async (topic: string, numCards: number) => {
     const cards = await generateFlashcards(topic, numCards);
-    const newSession: StudySession = {
-      id: Date.now().toString(),
+    const newStudySession: StudySession = {
+      id: undefined,
       topic,
       totalCards: numCards,
       cards,
       completedCards: 0,
       correctAnswers: 0,
-      createdAt: new Date(),
     };
 
-    setStudySessions((prev) => [newSession, ...prev]);
-    setCurrentSession(newSession);
+    setStudySessions((prev) => [newStudySession, ...prev]);
+    setCurrentSession(newStudySession);
     setCurrentCardIndex(0);
+
+    //save to db
+    await saveStudySession({
+      studySession: {
+        topic: newStudySession.topic,
+        totalCards: newStudySession.totalCards,
+        cards: newStudySession.cards,
+        completedCards: newStudySession.completedCards,
+        correctAnswers: newStudySession.correctAnswers,
+      },
+    });
   };
 
   const markCard = (isCorrect: boolean) => {
@@ -49,7 +62,7 @@ export function useStudySession() {
     const updatedCards = [...currentSession.cards];
     updatedCards[currentCardIndex] = {
       ...updatedCards[currentCardIndex],
-      isCorrect,
+      answeredCorrect: isCorrect,
     };
 
     const updatedSession = {
@@ -93,6 +106,16 @@ export function useStudySession() {
     setCurrentCardIndex(0);
   };
 
+  const deleteSession = (sessionId: string) => {
+    setStudySessions((prev) => prev.filter((session) => session.id !== sessionId));
+    
+    // If the deleted session is the current session, clear it
+    if (currentSession?.id === sessionId) {
+      setCurrentSession(null);
+      setCurrentCardIndex(0);
+    }
+  };
+
   return {
     studySessions,
     currentSession,
@@ -102,5 +125,6 @@ export function useStudySession() {
     navigateCard,
     completeSession,
     resumeSession,
+    deleteSession,
   };
 }
