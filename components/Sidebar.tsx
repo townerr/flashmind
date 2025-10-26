@@ -53,7 +53,9 @@ export default function Sidebar({
             <Card
               key={session._id?.toString() || "new"}
               className={`cursor-pointer transition-all hover:shadow-md ${
-                currentSessionId === session._id?.toString() || "" ? "ring-2 ring-blue-500" : ""
+                currentSessionId === session._id?.toString() || ""
+                  ? "ring-2 ring-blue-500"
+                  : ""
               }`}
               onClick={() => onResumeSession(session)}
             >

@@ -68,7 +68,10 @@ export default function FlashcardStudy({
 
       {/* Flashcard */}
       <div className="relative mb-8">
-        <div className="w-full max-w-2xl mx-auto cursor-pointer" onClick={() => setIsFlipped(!isFlipped)}>
+        <div
+          className="w-full max-w-2xl mx-auto cursor-pointer"
+          onClick={() => setIsFlipped(!isFlipped)}
+        >
           {/* Question Side */}
           {!isFlipped && (
             <Card className="bg-white w-full hover:shadow-xl transition-shadow duration-300">
@@ -90,7 +93,7 @@ export default function FlashcardStudy({
               </CardContent>
             </Card>
           )}
-          
+
           {/* Answer Side */}
           {isFlipped && (
             <Card className="bg-white w-full hover:shadow-xl transition-shadow duration-300">

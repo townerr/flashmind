@@ -108,10 +108,14 @@ export function useStudySession() {
   };
 
   const deleteSession = async (sessionId: Id<"studySessions">) => {
-    setStudySessions((prev) => prev.filter((session) => session._id?.toString() !== sessionId.toString()));
-    
+    setStudySessions((prev) =>
+      prev.filter(
+        (session) => session._id?.toString() !== sessionId.toString(),
+      ),
+    );
+
     // If the deleted session is the current session, clear it
-    if (currentSession?._id?.toString() === sessionId.toString() ) {
+    if (currentSession?._id?.toString() === sessionId.toString()) {
       setCurrentSession(null);
       setCurrentCardIndex(0);
     }

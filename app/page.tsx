@@ -20,11 +20,11 @@ export default function Home() {
     completeSession,
     resumeSession,
     deleteSession,
-    setStudySessions, 
+    setStudySessions,
   } = useStudySession();
 
   const user = useQuery(api.userApi.getCurrentUser);
-  const sessions = useQuery(api.userApi.getUserStudySessions); 
+  const sessions = useQuery(api.userApi.getUserStudySessions);
 
   useEffect(() => {
     if (sessions) {

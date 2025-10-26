@@ -22,12 +22,14 @@ export default defineSchema({
     userId: v.id("users"),
     topic: v.string(),
     totalCards: v.number(),
-    cards: v.array(v.object({
-      id: v.optional(v.string()),
-      question: v.string(),
-      answer: v.string(),
-      answeredCorrect: v.optional(v.boolean()),
-    })),
+    cards: v.array(
+      v.object({
+        id: v.optional(v.string()),
+        question: v.string(),
+        answer: v.string(),
+        answeredCorrect: v.optional(v.boolean()),
+      }),
+    ),
     completedCards: v.number(),
     correctAnswers: v.number(),
   }).index("by_userId", ["userId"]),

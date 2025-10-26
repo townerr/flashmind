@@ -20,17 +20,19 @@ export const createUserStudySession = mutation({
       totalCards: v.number(),
       completedCards: v.number(),
       correctAnswers: v.number(),
-      cards: v.array(v.object({
-        id: v.optional(v.string()),
-        question: v.string(),
-        answer: v.string(),
-        answeredCorrect: v.optional(v.boolean()),
-      })),
+      cards: v.array(
+        v.object({
+          id: v.optional(v.string()),
+          question: v.string(),
+          answer: v.string(),
+          answeredCorrect: v.optional(v.boolean()),
+        }),
+      ),
     }),
   },
   handler: async (ctx, args) => {
     const currentUserId = await getAuthUserId(ctx);
-    if(!currentUserId) {
+    if (!currentUserId) {
       throw new Error("User does not exist");
     }
 
@@ -58,7 +60,10 @@ export const getUserStudySessions = query({
       throw new Error("User not authenticated");
     }
 
-    return await ctx.db.query("studySessions").withIndex("by_userId", (q) => q.eq("userId", currentUserId)).collect();
+    return await ctx.db
+      .query("studySessions")
+      .withIndex("by_userId", (q) => q.eq("userId", currentUserId))
+      .collect();
   },
 });
 
@@ -76,7 +81,7 @@ export const deleteUserStudySession = mutation({
     if (!studySession) {
       throw new Error("Study session not found");
     }
-    
+
     if (currentUserId !== studySession.userId) {
       throw new Error("User not authorized to delete this study session");
     }
