@@ -51,7 +51,7 @@ export default function Sidebar({
         <div className="space-y-3">
           {studySessions.map((session) => (
             <Card
-              key={session.id}
+              key={session.id || "1"}
               className={`cursor-pointer transition-all hover:shadow-md ${
                 currentSessionId === session.id ? "ring-2 ring-blue-500" : ""
               }`}

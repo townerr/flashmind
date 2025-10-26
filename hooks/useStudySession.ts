@@ -32,7 +32,7 @@ export function useStudySession() {
   const createStudySession = async (topic: string, numCards: number) => {
     const cards = await generateFlashcards(topic, numCards);
     const newStudySession: StudySession = {
-      id: undefined,
+      id: "",
       topic,
       totalCards: numCards,
       cards,
@@ -126,5 +126,6 @@ export function useStudySession() {
     completeSession,
     resumeSession,
     deleteSession,
+    setStudySessions,
   };
 }

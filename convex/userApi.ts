@@ -51,16 +51,14 @@ export const createUserStudySession = mutation({
 });
 
 export const getUserStudySessions = query({
-  args: {
-    userId: v.id("users"),
-  },
-  handler: async (ctx, args) => {
+  args: {},
+  handler: async (ctx) => {
     const currentUserId = await getAuthUserId(ctx);
-    if (currentUserId !== args.userId) {
-      throw new Error("Not authorized to get study sessions for this user");
+    if (currentUserId === null) {
+      throw new Error("User not authenticated");
     }
 
-    return await ctx.db.query("studySessions").withIndex("by_userId", (q) => q.eq("userId", args.userId)).collect();
+    return await ctx.db.query("studySessions").withIndex("by_userId", (q) => q.eq("userId", currentUserId)).collect();
   },
 });
 

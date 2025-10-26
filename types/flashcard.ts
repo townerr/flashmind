@@ -6,7 +6,7 @@ export interface Flashcard {
 }
 
 export interface StudySession {
-  id?: string | null;
+  id: string;
   topic: string;
   totalCards: number;
   cards: Flashcard[];
