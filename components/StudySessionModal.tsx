@@ -1,0 +1,104 @@
+"use client";
+
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Plus } from "lucide-react";
+
+interface StudySessionModalProps {
+  onCreateSession: (topic: string, numCards: number) => Promise<void>;
+}
+
+export default function StudySessionModal({ onCreateSession }: StudySessionModalProps) {
+  const [topic, setTopic] = useState("");
+  const [numCards, setNumCards] = useState(5);
+  const [isCreating, setIsCreating] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleModalClose = (open: boolean) => {
+    setIsModalOpen(open);
+    if (!open) {
+      // Reset form when modal is closed without creating
+      setTopic("");
+      setNumCards(5);
+    }
+  };
+
+  const handleCreateSession = async () => {
+    if (!topic.trim()) return;
+    
+    setIsCreating(true);
+    try {
+      await onCreateSession(topic, numCards);
+      setIsModalOpen(false);
+      setTopic("");
+      setNumCards(5);
+    } finally {
+      setIsCreating(false);
+    }
+  };
+
+  return (
+    <Dialog open={isModalOpen} onOpenChange={handleModalClose}>
+      <DialogTrigger asChild>
+        <Button className="w-full mb-6 text-white bg-blue-600 hover:bg-blue-600/90 active:bg-blue-700" size="lg">
+          <Plus className="h-5 w-5 mr-2" />
+          Create New Study Session
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <Plus className="h-5 w-5" />
+            Create New Study Session
+          </DialogTitle>
+          <DialogDescription>
+            Enter the topic you want to study and the number of flashcards to generate.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="space-y-4 py-4">
+          <div>
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
+              Topic
+            </label>
+            <Input
+              value={topic}
+              onChange={(e) => setTopic(e.target.value)}
+              placeholder="Enter study topic..."
+              className="w-full"
+            />
+          </div>
+          <div>
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
+              Number of Cards
+            </label>
+            <Input
+              type="number"
+              value={numCards}
+              onChange={(e) => setNumCards(parseInt(e.target.value) || 5)}
+              min="1"
+              max="50"
+              className="w-full"
+            />
+          </div>
+        </div>
+        <DialogFooter>
+          <Button
+            variant="outline"
+            onClick={() => handleModalClose(false)}
+            disabled={isCreating}
+          >
+            Cancel
+          </Button>
+          <Button 
+            onClick={handleCreateSession}
+            disabled={!topic.trim() || isCreating}
+          >
+            {isCreating ? "Generating..." : "Generate Flashcards"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
