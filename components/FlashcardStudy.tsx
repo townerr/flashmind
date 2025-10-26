@@ -135,14 +135,16 @@ export default function FlashcardStudy({
               <Button
                 variant="outline"
                 onClick={() => handleMarkCard(false)}
-                className="flex items-center gap-2 text-white bg-red-600 hover:bg-red-600/90 active:bg-red-700"
+                disabled={currentCard?.answeredCorrect === false}
+                className="flex items-center gap-2 text-white bg-red-600 hover:bg-red-600/90 active:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <XCircle className="h-4 w-4" />
                 Incorrect
               </Button>
               <Button
                 onClick={() => handleMarkCard(true)}
-                className="flex items-center gap-2 text-white bg-green-600 hover:bg-green-600/90 active:bg-green-700"
+                disabled={currentCard?.answeredCorrect === true}
+                className="flex items-center gap-2 text-white bg-green-600 hover:bg-green-600/90 active:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <CheckCircle className="h-4 w-4" />
                 Correct

@@ -56,17 +56,39 @@ export function useStudySession() {
   const markCard = (isCorrect: boolean) => {
     if (!currentSession) return;
 
+    const currentCard = currentSession.cards[currentCardIndex];
+    const wasAlreadyAnswered = currentCard.answeredCorrect !== undefined;
+    const previousAnswerWasCorrect = currentCard.answeredCorrect === true;
+
     const updatedCards = [...currentSession.cards];
     updatedCards[currentCardIndex] = {
       ...updatedCards[currentCardIndex],
       answeredCorrect: isCorrect,
     };
 
+    // Calculate the changes needed
+    const completedCardsChange = wasAlreadyAnswered ? 0 : 1; // Only increment if not already answered
+    let correctAnswersChange = 0;
+
+    if (!wasAlreadyAnswered) {
+      // First time answering this card
+      correctAnswersChange = isCorrect ? 1 : 0;
+    } else if (previousAnswerWasCorrect !== isCorrect) {
+      // Changed answer
+      if (isCorrect) {
+        // Changed from incorrect to correct
+        correctAnswersChange = 1;
+      } else {
+        // Changed from correct to incorrect
+        correctAnswersChange = -1;
+      }
+    }
+
     const updatedSession = {
       ...currentSession,
       cards: updatedCards,
-      completedCards: currentSession.completedCards + 1,
-      correctAnswers: currentSession.correctAnswers + (isCorrect ? 1 : 0),
+      completedCards: currentSession.completedCards + completedCardsChange,
+      correctAnswers: currentSession.correctAnswers + correctAnswersChange,
     };
 
     setCurrentSession(updatedSession);
