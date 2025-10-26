@@ -7,6 +7,7 @@ import { GitHubLogoIcon } from "@radix-ui/react-icons";
 import { toast, Toaster } from "sonner";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 export default function SignInPage() {
   const [step, setStep] = useState<"signIn" | "linkSent">("signIn");
@@ -16,6 +17,7 @@ export default function SignInPage() {
       <div className="max-w-[384px] mx-auto flex flex-col my-auto gap-4 pb-8">
         {step === "signIn" ? (
           <>
+            <Image src="/flashmind.svg" alt="FlashMind Logo" width={150} height={150} className="mx-auto fill-blue-600 hover:animate-spin-slow" />
             <h2 className="font-semibold text-2xl tracking-tight">
               Sign in to start studying!
             </h2>
@@ -107,7 +109,7 @@ function SignInWithMagicLink({
     >
       <label htmlFor="email">Email</label>
       <Input name="email" id="email" className="mb-4" autoComplete="email" />
-      <Button className="bg-black text-white active:bg-black/80 hover:bg-black/90" type="submit">Send sign-in link to email</Button>
+      <Button className="bg-blue-600 text-white active:bg-blue-700 hover:bg-blue-600/90" type="submit">Send sign-in link to email</Button>
       <Toaster />
     </form>
   );

@@ -3,15 +3,21 @@
 import SignOutButton from "./signout-button"
 import Link from "next/link"
 import { useConvexAuth } from "convex/react"
+import Image from "next/image"
 
 const Navbar = () => {
   const { isAuthenticated } = useConvexAuth();
 
   return (
-    <header className="sticky top-0 z-10 bg-background p-4 border-b-2 border-slate-200 dark:border-slate-800 flex flex-row justify-between items-center">
-        {isAuthenticated ? <Link href="/" className="text-2xl font-bold">FlashMind</Link> : <span className="text-2xl font-bold">FlashMind</span> }
+    <div className="fixed top-0 left-0 right-0 z-50 w-full bg-white dark:bg-gray-900 p-4 border-b-2 border-slate-200 dark:border-slate-800 flex flex-row justify-between items-center">
+        {isAuthenticated ? 
+        <Link href="/" className="text-2xl font-bold flex items-center gap-2">
+            <Image src="/flashmind.svg" alt="FlashMind Logo" width={45} height={45} />
+            FlashMind
+        </Link> 
+        : <span className="text-2xl font-bold">FlashMind</span> }
         <SignOutButton />
-    </header>
+    </div>
   )
 }
 

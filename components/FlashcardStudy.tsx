@@ -35,7 +35,7 @@ export default function FlashcardStudy({
   };
 
   return (
-    <div className="w-full max-w-4xl">
+    <div className="w-full max-w-4xl max-h-full overflow-y-auto">
       {/* Progress Header */}
       <div className="text-center mb-8">
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
@@ -64,7 +64,7 @@ export default function FlashcardStudy({
           }`}
           onClick={() => setIsFlipped(!isFlipped)}
         >
-          <Card className="w-full hover:shadow-xl transition-shadow duration-300">
+          <Card className="bg-white w-full hover:shadow-xl transition-shadow duration-300">
             <CardContent className="p-12 min-h-[400px] flex items-center justify-center">
               <div className="text-center">
                 <div className="mb-4">
