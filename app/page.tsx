@@ -19,7 +19,7 @@ export default function Home() {
     resumeSession,
   } = useStudySession();
 
-  const user = useQuery(api.myFunctions.getCurrentUserId);
+  const user = useQuery(api.userApi.getCurrentUser);
 
   return (
     <div className="min-h-[calc(100vh-5rem)] bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 pt-20">
@@ -29,7 +29,7 @@ export default function Home() {
           currentSessionId={currentSession?.id}
           onCreateSession={createStudySession}
           onResumeSession={resumeSession}
-          userName={user?.name ?? "Guest"}
+          userName={user?.username ?? "Guest"}
         />
 
         <div className="flex-1 flex flex-col items-center justify-center p-8 overflow-hidden">
