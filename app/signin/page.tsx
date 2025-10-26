@@ -6,6 +6,7 @@ import { useAuthActions } from "@convex-dev/auth/react";
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
 import { toast, Toaster } from "sonner";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function SignInPage() {
   const [step, setStep] = useState<"signIn" | "linkSent">("signIn");
@@ -63,12 +64,20 @@ function SignInWithGitHub() {
 
 function SignInAsGuest() {
   const { signIn } = useAuthActions();
+  const router = useRouter();
+
+  const handleSignIn = () => {
+    void signIn("anonymous", { redirectTo: "/" }).then(() => {
+      router.push("/");
+    });
+  };
+
   return (
     <Button
       className="flex-1 hover:bg-neutral-100 active:bg-neutral-200 hover:text-black"
       variant="outline"
       type="button"
-      onClick={() => void signIn("anonymous", { redirectTo: "/" })}
+      onClick={handleSignIn}
     >
       Continue as Guest
     </Button>
