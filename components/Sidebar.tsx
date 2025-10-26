@@ -6,13 +6,14 @@ import { Button } from "@/components/ui/button";
 import { BookOpen, Trash2 } from "lucide-react";
 import StudySessionModal from "./StudySessionModal";
 import { StudySession } from "@/types/flashcard";
+import { Id } from "@/convex/_generated/dataModel";
 
 interface SidebarProps {
   studySessions: StudySession[];
   currentSessionId?: string;
   onCreateSession: (topic: string, numCards: number) => Promise<void>;
   onResumeSession: (session: StudySession) => void;
-  onDeleteSession: (sessionId: string) => void;
+  onDeleteSession: (sessionId: Id<"studySessions">) => void;
   userName: string;
 }
 
@@ -26,7 +27,7 @@ export default function Sidebar({
 }: SidebarProps) {
   const handleDeleteSession = (e: React.MouseEvent, sessionId: string) => {
     e.stopPropagation(); // Prevent triggering the card click
-    onDeleteSession(sessionId);
+    onDeleteSession(sessionId as Id<"studySessions">);
   };
 
   return (

@@ -37,7 +37,7 @@ export default function Home() {
       <div className="flex h-[calc(100vh-5rem)]">
         <Sidebar
           studySessions={studySessions}
-          currentSessionId={currentSession?.id || ""}
+          currentSessionId={currentSession?._id}
           onCreateSession={createStudySession}
           onResumeSession={resumeSession}
           onDeleteSession={deleteSession}

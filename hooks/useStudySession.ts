@@ -5,6 +5,7 @@ import { StudySession, Flashcard } from "@/types/flashcard";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
+import { getCards } from "@/lib/webllm";
 
 export function useStudySession() {
   const [studySessions, setStudySessions] = useState<StudySession[]>([]);
@@ -19,16 +20,11 @@ export function useStudySession() {
     topic: string,
     count: number,
   ): Promise<Flashcard[]> => {
-    // Mock data for demonstration - in real app, this would call AI API
-    const mockCards: Flashcard[] = [];
-    for (let i = 1; i <= count; i++) {
-      mockCards.push({
-        id: `${topic}-${i}`,
-        question: `What is the main concept of ${topic} in question ${i}?`,
-        answer: `This is the detailed answer for ${topic} question ${i}. It explains the key concepts and provides comprehensive information about the topic.`,
-      });
-    }
-    return mockCards;
+    // Get flashcards from AI
+    const response = await getCards(topic, count);
+    if (!response) return [];
+    const cards = JSON.parse(response) as Flashcard[];
+    return cards;
   };
 
   const createStudySession = async (topic: string, numCards: number) => {
