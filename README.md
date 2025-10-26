@@ -1,7 +1,13 @@
-<img src="https://i.imgur.com/mGppYyy.png" width="100px" height="100px">
+<p align="center">
+  <img src="https://i.imgur.com/mGppYyy.png" width="250px" height="250px">
+<p>
 
 # FlashMind AI
 Use AI locally in your browser to generate flashcards on a topic to study from.
+
+Try out the [FlashMind Demo](INSERT DEMO LINK)
+
+[INSERT DEMO VIDEO]
 
 ## Technologies Used:
 - [React & Nextjs](https://nextjs.org/) for frontend.
