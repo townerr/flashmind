@@ -1,17 +1,17 @@
 "use client";
 
-import { BookOpen } from "lucide-react";
 import Image from "next/image";
 
 export default function WelcomeScreen() {
   return (
-    <div className="text-center">
+    <div className="text-center relative z-10">
       <Image
         src="/flashmind.svg"
         alt="FlashMind Logo"
         width={150}
         height={150}
-        className="mx-auto mb-6 fill-blue-600 hover:animate-spin-slow"
+        className="mx-auto mb-6 hover:animate-spin-slow"
+        priority
       />
       <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
         Welcome to FlashMind

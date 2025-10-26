@@ -67,31 +67,51 @@ export default function FlashcardStudy({
       </div>
 
       {/* Flashcard */}
-      <div className="relative mb-8 perspective-1000">
-        <div
-          className={`w-full max-w-2xl mx-auto cursor-pointer transition-transform duration-700 preserve-3d ${
-            isFlipped ? "rotate-y-180" : ""
-          }`}
-          onClick={() => setIsFlipped(!isFlipped)}
-        >
-          <Card className="bg-white w-full hover:shadow-xl transition-shadow duration-300">
-            <CardContent className="p-12 min-h-[400px] flex items-center justify-center">
-              <div className="text-center">
-                <div className="mb-4">
-                  <RotateCcw className="h-8 w-8 text-gray-400 mx-auto" />
+      <div className="relative mb-8">
+        <div className="w-full max-w-2xl mx-auto cursor-pointer" onClick={() => setIsFlipped(!isFlipped)}>
+          {/* Question Side */}
+          {!isFlipped && (
+            <Card className="bg-white w-full hover:shadow-xl transition-shadow duration-300">
+              <CardContent className="p-12 min-h-[400px] flex items-center justify-center">
+                <div className="text-center">
+                  <div className="mb-4">
+                    <RotateCcw className="h-8 w-8 text-gray-400 mx-auto" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+                    Question
+                  </h3>
+                  <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
+                    {currentCard?.question}
+                  </p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-4">
+                    Click to see answer
+                  </p>
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-                  {isFlipped ? "Answer" : "Question"}
-                </h3>
-                <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
-                  {isFlipped ? currentCard?.answer : currentCard?.question}
-                </p>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-4">
-                  Click to {isFlipped ? "see question" : "see answer"}
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          )}
+          
+          {/* Answer Side */}
+          {isFlipped && (
+            <Card className="bg-white w-full hover:shadow-xl transition-shadow duration-300">
+              <CardContent className="p-12 min-h-[400px] flex items-center justify-center">
+                <div className="text-center">
+                  <div className="mb-4">
+                    <RotateCcw className="h-8 w-8 text-gray-400 mx-auto" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+                    Answer
+                  </h3>
+                  <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
+                    {currentCard?.answer}
+                  </p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-4">
+                    Click to see question
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
 

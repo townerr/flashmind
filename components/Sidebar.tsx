@@ -30,7 +30,7 @@ export default function Sidebar({
   };
 
   return (
-    <div className="w-80 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 p-6 overflow-y-auto h-full">
+    <div className="z-10 w-80 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 p-6 overflow-y-auto h-full">
       <div className="flex items-center gap-2 mb-6">
         <BookOpen className="h-6 w-6 text-blue-600" />
         <h1 className="text-xl font-bold text-gray-900 dark:text-white">
