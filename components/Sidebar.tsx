@@ -3,7 +3,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { BookOpen, Trash2 } from "lucide-react";
+import { BookOpen, Loader2, Trash2 } from "lucide-react";
 import StudySessionModal from "./StudySessionModal";
 import { StudySession } from "@/types/flashcard";
 import { Id } from "@/convex/_generated/dataModel";
@@ -15,6 +15,7 @@ interface SidebarProps {
   onResumeSession: (session: StudySession) => void;
   onDeleteSession: (sessionId: Id<"studySessions">) => void;
   userName: string;
+  initComplete: boolean;
 }
 
 export default function Sidebar({
@@ -24,6 +25,7 @@ export default function Sidebar({
   onResumeSession,
   onDeleteSession,
   userName,
+  initComplete,
 }: SidebarProps) {
   const handleDeleteSession = (e: React.MouseEvent, sessionId: string) => {
     e.stopPropagation(); // Prevent triggering the card click
@@ -42,7 +44,12 @@ export default function Sidebar({
       <Separator className="mb-6" />
 
       {/* Create New Session Modal */}
-      <StudySessionModal onCreateSession={onCreateSession} />
+      {initComplete ? <StudySessionModal onCreateSession={onCreateSession} /> : 
+        <Button disabled className="w-full mb-6 text-white bg-blue-600 hover:bg-blue-600/90 active:bg-blue-700">
+          <Loader2 className="h-4 w-4 animate-spin" />
+          Loading AI Engine...
+        </Button>
+      }
 
       {/* Study Sessions History */}
       <div>
@@ -74,15 +81,15 @@ export default function Sidebar({
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>
-                <div className="flex justify-between items-start mb-2">
-                  <h4 className="font-medium text-gray-900 dark:text-white truncate pr-8">
+                <div className="flex justify-between items-start mb-2 pr-10">
+                  <h4 className="font-medium text-gray-900 dark:text-white truncate">
                     {session.topic}
                   </h4>
-                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                </div>
+                <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400 mb-2">
+                  <span>
                     {session.totalCards} cards
                   </span>
-                </div>
-                <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
                   <span>
                     Completed: {session.completedCards}/{session.totalCards}
                   </span>

@@ -7,9 +7,11 @@ import { useStudySession } from "@/hooks/useStudySession";
 import { api } from "@/convex/_generated/api";
 import { useQuery } from "convex/react";
 import { StudySession } from "@/types/flashcard";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { initializeEngine } from "@/lib/webllm";
 
 export default function Home() {
+  const [initComplete, setInitComplete] = useState(false);
   const {
     studySessions,
     currentSession,
@@ -23,8 +25,19 @@ export default function Home() {
     setStudySessions,
   } = useStudySession();
 
+  //init ai engine and query user's data
   const user = useQuery(api.userApi.getCurrentUser);
   const sessions = useQuery(api.userApi.getUserStudySessions);
+  
+  useEffect(() => {
+    async function handleInitialize() {
+      await initializeEngine();
+      console.log("Engine initialized");
+      setInitComplete(true);
+    }
+    
+    handleInitialize();
+  }, []);
 
   useEffect(() => {
     if (sessions) {
@@ -42,6 +55,7 @@ export default function Home() {
           onResumeSession={resumeSession}
           onDeleteSession={deleteSession}
           userName={user?.username ?? "Guest"}
+          initComplete={initComplete}
         />
 
         <div className="flex-1 flex flex-col items-center justify-center p-8 overflow-hidden">

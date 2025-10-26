@@ -12,7 +12,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Plus } from "lucide-react";
+import { Plus, Loader2 } from "lucide-react";
 
 interface StudySessionModalProps {
   onCreateSession: (topic: string, numCards: number) => Promise<void>;
@@ -71,47 +71,62 @@ export default function StudySessionModal({
             generate.
           </DialogDescription>
         </DialogHeader>
-        <div className="space-y-4 py-4">
-          <div>
-            <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
-              Topic
-            </label>
-            <Input
-              value={topic}
-              onChange={(e) => setTopic(e.target.value)}
-              placeholder="Enter study topic..."
-              className="w-full"
-            />
+        
+        {isCreating ? (
+          <div className="flex flex-col items-center justify-center py-12">
+            <Loader2 className="h-12 w-12 text-blue-600 animate-spin mb-4" />
+            <p className="text-lg font-semibold text-gray-900 dark:text-white">
+              Generating Flashcards
+            </p>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+              AI is creating your study materials...
+            </p>
           </div>
-          <div>
-            <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
-              Number of Cards
-            </label>
-            <Input
-              type="number"
-              value={numCards}
-              onChange={(e) => setNumCards(parseInt(e.target.value) || 5)}
-              min="1"
-              max="50"
-              className="w-full"
-            />
+        ) : (
+          <div className="space-y-4 py-4">
+            <div>
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
+                Topic
+              </label>
+              <Input
+                value={topic}
+                onChange={(e) => setTopic(e.target.value)}
+                placeholder="Enter study topic..."
+                className="w-full"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
+                Number of Cards
+              </label>
+              <Input
+                type="number"
+                value={numCards}
+                onChange={(e) => setNumCards(parseInt(e.target.value) || 5)}
+                min="1"
+                max="50"
+                className="w-full"
+              />
+            </div>
           </div>
-        </div>
-        <DialogFooter>
-          <Button
-            variant="outline"
-            onClick={() => handleModalClose(false)}
-            disabled={isCreating}
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={handleCreateSession}
-            disabled={!topic.trim() || isCreating}
-          >
-            {isCreating ? "Generating..." : "Generate Flashcards"}
-          </Button>
-        </DialogFooter>
+        )}
+        {!isCreating && (
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => handleModalClose(false)}
+              disabled={isCreating}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleCreateSession}
+              disabled={!topic.trim() || isCreating}
+            >
+              Generate Flashcards
+            </Button>
+          </DialogFooter>
+        )}
       </DialogContent>
     </Dialog>
   );
