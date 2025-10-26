@@ -24,7 +24,7 @@ export default function Home() {
   return (
     <div className="min-h-[calc(100vh-5rem)] bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 pt-20">
       <div className="flex h-[calc(100vh-5rem)]">
-        <Sidebar 
+        <Sidebar
           studySessions={studySessions}
           currentSessionId={currentSession?.id}
           onCreateSession={createStudySession}
@@ -49,4 +49,3 @@ export default function Home() {
     </div>
   );
 }
-

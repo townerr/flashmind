@@ -5,17 +5,22 @@ import { StudySession, Flashcard } from "@/types/flashcard";
 
 export function useStudySession() {
   const [studySessions, setStudySessions] = useState<StudySession[]>([]);
-  const [currentSession, setCurrentSession] = useState<StudySession | null>(null);
+  const [currentSession, setCurrentSession] = useState<StudySession | null>(
+    null,
+  );
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
 
-  const generateFlashcards = async (topic: string, count: number): Promise<Flashcard[]> => {
+  const generateFlashcards = async (
+    topic: string,
+    count: number,
+  ): Promise<Flashcard[]> => {
     // Mock data for demonstration - in real app, this would call AI API
     const mockCards: Flashcard[] = [];
     for (let i = 1; i <= count; i++) {
       mockCards.push({
         id: `${topic}-${i}`,
         question: `What is the main concept of ${topic} in question ${i}?`,
-        answer: `This is the detailed answer for ${topic} question ${i}. It explains the key concepts and provides comprehensive information about the topic.`
+        answer: `This is the detailed answer for ${topic} question ${i}. It explains the key concepts and provides comprehensive information about the topic.`,
       });
     }
     return mockCards;
@@ -30,48 +35,51 @@ export function useStudySession() {
       cards,
       completedCards: 0,
       correctAnswers: 0,
-      createdAt: new Date()
+      createdAt: new Date(),
     };
-    
-    setStudySessions(prev => [newSession, ...prev]);
+
+    setStudySessions((prev) => [newSession, ...prev]);
     setCurrentSession(newSession);
     setCurrentCardIndex(0);
   };
 
   const markCard = (isCorrect: boolean) => {
     if (!currentSession) return;
-    
+
     const updatedCards = [...currentSession.cards];
     updatedCards[currentCardIndex] = {
       ...updatedCards[currentCardIndex],
-      isCorrect
+      isCorrect,
     };
-    
+
     const updatedSession = {
       ...currentSession,
       cards: updatedCards,
       completedCards: currentSession.completedCards + 1,
-      correctAnswers: currentSession.correctAnswers + (isCorrect ? 1 : 0)
+      correctAnswers: currentSession.correctAnswers + (isCorrect ? 1 : 0),
     };
-    
+
     setCurrentSession(updatedSession);
-    setStudySessions(prev => 
-      prev.map(session => session.id === updatedSession.id ? updatedSession : session)
+    setStudySessions((prev) =>
+      prev.map((session) =>
+        session.id === updatedSession.id ? updatedSession : session,
+      ),
     );
-    
+
     // Move to next card
     if (currentCardIndex < currentSession.cards.length - 1) {
-      setCurrentCardIndex(prev => prev + 1);
+      setCurrentCardIndex((prev) => prev + 1);
     }
   };
 
-  const navigateCard = (direction: 'prev' | 'next') => {
+  const navigateCard = (direction: "prev" | "next") => {
     if (!currentSession) return;
-    
-    const newIndex = direction === 'prev' 
-      ? Math.max(0, currentCardIndex - 1)
-      : Math.min(currentSession.cards.length - 1, currentCardIndex + 1);
-    
+
+    const newIndex =
+      direction === "prev"
+        ? Math.max(0, currentCardIndex - 1)
+        : Math.min(currentSession.cards.length - 1, currentCardIndex + 1);
+
     setCurrentCardIndex(newIndex);
   };
 

@@ -3,14 +3,24 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Plus } from "lucide-react";
 
 interface StudySessionModalProps {
   onCreateSession: (topic: string, numCards: number) => Promise<void>;
 }
 
-export default function StudySessionModal({ onCreateSession }: StudySessionModalProps) {
+export default function StudySessionModal({
+  onCreateSession,
+}: StudySessionModalProps) {
   const [topic, setTopic] = useState("");
   const [numCards, setNumCards] = useState(5);
   const [isCreating, setIsCreating] = useState(false);
@@ -27,7 +37,7 @@ export default function StudySessionModal({ onCreateSession }: StudySessionModal
 
   const handleCreateSession = async () => {
     if (!topic.trim()) return;
-    
+
     setIsCreating(true);
     try {
       await onCreateSession(topic, numCards);
@@ -42,7 +52,10 @@ export default function StudySessionModal({ onCreateSession }: StudySessionModal
   return (
     <Dialog open={isModalOpen} onOpenChange={handleModalClose}>
       <DialogTrigger asChild>
-        <Button className="w-full mb-6 text-white bg-blue-600 hover:bg-blue-600/90 active:bg-blue-700" size="lg">
+        <Button
+          className="w-full mb-6 text-white bg-blue-600 hover:bg-blue-600/90 active:bg-blue-700"
+          size="lg"
+        >
           <Plus className="h-5 w-5 mr-2" />
           Create New Study Session
         </Button>
@@ -54,7 +67,8 @@ export default function StudySessionModal({ onCreateSession }: StudySessionModal
             Create New Study Session
           </DialogTitle>
           <DialogDescription>
-            Enter the topic you want to study and the number of flashcards to generate.
+            Enter the topic you want to study and the number of flashcards to
+            generate.
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4 py-4">
@@ -91,7 +105,7 @@ export default function StudySessionModal({ onCreateSession }: StudySessionModal
           >
             Cancel
           </Button>
-          <Button 
+          <Button
             onClick={handleCreateSession}
             disabled={!topic.trim() || isCreating}
           >

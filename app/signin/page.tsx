@@ -17,7 +17,13 @@ export default function SignInPage() {
       <div className="max-w-[384px] mx-auto flex flex-col my-auto gap-4 pb-8">
         {step === "signIn" ? (
           <>
-            <Image src="/flashmind.svg" alt="FlashMind Logo" width={150} height={150} className="mx-auto fill-blue-600 hover:animate-spin-slow" />
+            <Image
+              src="/flashmind.svg"
+              alt="FlashMind Logo"
+              width={150}
+              height={150}
+              className="mx-auto fill-blue-600 hover:animate-spin-slow"
+            />
             <h2 className="font-semibold text-2xl tracking-tight">
               Sign in to start studying!
             </h2>
@@ -25,7 +31,9 @@ export default function SignInPage() {
             <SignInWithGitHub />
             <div className="flex items-center">
               <div className="flex-grow border-t border-neutral-300"></div>
-              <span className="px-3 text-neutral-500 text-sm">Or continue with</span>
+              <span className="px-3 text-neutral-500 text-sm">
+                Or continue with
+              </span>
               <div className="flex-grow border-t border-neutral-300"></div>
             </div>
             <SignInWithMagicLink handleLinkSent={() => setStep("linkSent")} />
@@ -109,7 +117,12 @@ function SignInWithMagicLink({
     >
       <label htmlFor="email">Email</label>
       <Input name="email" id="email" className="mb-4" autoComplete="email" />
-      <Button className="bg-blue-600 text-white active:bg-blue-700 hover:bg-blue-600/90" type="submit">Send sign-in link to email</Button>
+      <Button
+        className="bg-blue-600 text-white active:bg-blue-700 hover:bg-blue-600/90"
+        type="submit"
+      >
+        Send sign-in link to email
+      </Button>
       <Toaster />
     </form>
   );

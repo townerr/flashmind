@@ -35,9 +35,7 @@ export default function RootLayout({
         >
           <ConvexClientProvider>
             <Navbar />
-            <main>
-              {children}
-            </main>
+            <main>{children}</main>
           </ConvexClientProvider>
         </body>
       </html>
