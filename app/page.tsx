@@ -28,14 +28,14 @@ export default function Home() {
   //init ai engine and query user's data
   const user = useQuery(api.userApi.getCurrentUser);
   const sessions = useQuery(api.userApi.getUserStudySessions);
-  
+
   useEffect(() => {
     async function handleInitialize() {
       await initializeEngine();
       console.log("Engine initialized");
       setInitComplete(true);
     }
-    
+
     handleInitialize();
   }, []);
 

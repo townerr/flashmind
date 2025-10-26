@@ -44,12 +44,17 @@ export default function Sidebar({
       <Separator className="mb-6" />
 
       {/* Create New Session Modal */}
-      {initComplete ? <StudySessionModal onCreateSession={onCreateSession} /> : 
-        <Button disabled className="w-full mb-6 text-white bg-blue-600 hover:bg-blue-600/90 active:bg-blue-700">
+      {initComplete ? (
+        <StudySessionModal onCreateSession={onCreateSession} />
+      ) : (
+        <Button
+          disabled
+          className="w-full mb-6 text-white bg-blue-600 hover:bg-blue-600/90 active:bg-blue-700"
+        >
           <Loader2 className="h-4 w-4 animate-spin" />
           Loading AI Engine...
         </Button>
-      }
+      )}
 
       {/* Study Sessions History */}
       <div>
@@ -87,9 +92,7 @@ export default function Sidebar({
                   </h4>
                 </div>
                 <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400 mb-2">
-                  <span>
-                    {session.totalCards} cards
-                  </span>
+                  <span>{session.totalCards} cards</span>
                   <span>
                     Completed: {session.completedCards}/{session.totalCards}
                   </span>

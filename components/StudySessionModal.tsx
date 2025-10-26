@@ -71,7 +71,7 @@ export default function StudySessionModal({
             generate.
           </DialogDescription>
         </DialogHeader>
-        
+
         {isCreating ? (
           <div className="flex flex-col items-center justify-center py-12">
             <Loader2 className="h-12 w-12 text-blue-600 animate-spin mb-4" />
