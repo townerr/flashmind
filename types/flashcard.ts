@@ -1,3 +1,5 @@
+import { Id } from "@/convex/_generated/dataModel";
+
 export interface Flashcard {
   id: string;
   question: string;
@@ -6,7 +8,7 @@ export interface Flashcard {
 }
 
 export interface StudySession {
-  id: string;
+  _id?: Id<"studySessions">;
   topic: string;
   totalCards: number;
   cards: Flashcard[];

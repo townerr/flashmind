@@ -64,7 +64,6 @@ export const getUserStudySessions = query({
 
 export const deleteUserStudySession = mutation({
   args: {
-    userId: v.id("users"),
     studySessionId: v.id("studySessions"),
   },
   handler: async (ctx, args) => {
@@ -73,7 +72,12 @@ export const deleteUserStudySession = mutation({
       throw new Error("User not authenticated");
     }
 
-    if (currentUserId !== args.userId) {
+    const studySession = await ctx.db.get(args.studySessionId);
+    if (!studySession) {
+      throw new Error("Study session not found");
+    }
+    
+    if (currentUserId !== studySession.userId) {
       throw new Error("User not authorized to delete this study session");
     }
 

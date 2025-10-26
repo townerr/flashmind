@@ -4,6 +4,7 @@ import { useState } from "react";
 import { StudySession, Flashcard } from "@/types/flashcard";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
 
 export function useStudySession() {
   const [studySessions, setStudySessions] = useState<StudySession[]>([]);
@@ -12,6 +13,7 @@ export function useStudySession() {
   );
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const saveStudySession = useMutation(api.userApi.createUserStudySession);
+  const deleteStudySession = useMutation(api.userApi.deleteUserStudySession);
 
   const generateFlashcards = async (
     topic: string,
@@ -32,7 +34,6 @@ export function useStudySession() {
   const createStudySession = async (topic: string, numCards: number) => {
     const cards = await generateFlashcards(topic, numCards);
     const newStudySession: StudySession = {
-      id: "",
       topic,
       totalCards: numCards,
       cards,
@@ -75,7 +76,7 @@ export function useStudySession() {
     setCurrentSession(updatedSession);
     setStudySessions((prev) =>
       prev.map((session) =>
-        session.id === updatedSession.id ? updatedSession : session,
+        session._id === updatedSession._id ? updatedSession : session,
       ),
     );
 
@@ -106,14 +107,18 @@ export function useStudySession() {
     setCurrentCardIndex(0);
   };
 
-  const deleteSession = (sessionId: string) => {
-    setStudySessions((prev) => prev.filter((session) => session.id !== sessionId));
+  const deleteSession = async (sessionId: Id<"studySessions">) => {
+    setStudySessions((prev) => prev.filter((session) => session._id?.toString() !== sessionId.toString()));
     
     // If the deleted session is the current session, clear it
-    if (currentSession?.id === sessionId) {
+    if (currentSession?._id?.toString() === sessionId.toString() ) {
       setCurrentSession(null);
       setCurrentCardIndex(0);
     }
+
+    await deleteStudySession({
+      studySessionId: sessionId,
+    });
   };
 
   return {

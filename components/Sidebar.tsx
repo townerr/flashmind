@@ -51,9 +51,9 @@ export default function Sidebar({
         <div className="space-y-3">
           {studySessions.map((session) => (
             <Card
-              key={session.id || "1"}
+              key={session._id?.toString() || "new"}
               className={`cursor-pointer transition-all hover:shadow-md ${
-                currentSessionId === session.id ? "ring-2 ring-blue-500" : ""
+                currentSessionId === session._id?.toString() || "" ? "ring-2 ring-blue-500" : ""
               }`}
               onClick={() => onResumeSession(session)}
             >
@@ -62,7 +62,12 @@ export default function Sidebar({
                   variant="ghost"
                   size="icon"
                   className="absolute top-2 right-2 h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50"
-                  onClick={(e) => handleDeleteSession(e, session.id)}
+                  onClick={(e) => {
+                    if (session._id) {
+                      handleDeleteSession(e, session._id);
+                      e.stopPropagation();
+                    }
+                  }}
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>
