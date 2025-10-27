@@ -5,6 +5,7 @@ interface User {
   username?: string;
   email?: string;
   isAnonymous?: boolean;
+  image?: string;
 }
 
 interface UserStore {
