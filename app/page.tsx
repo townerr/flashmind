@@ -9,7 +9,6 @@ import { useUserStore } from "@/store/useUserStore";
 import { api } from "@/convex/_generated/api";
 import { useQuery } from "convex/react";
 import { useEffect } from "react";
-import { initializeEngine } from "@/lib/webllm";
 
 export default function Home() {
   const {
@@ -28,20 +27,8 @@ export default function Home() {
   const user = useQuery(api.userApi.getCurrentUser);
   const sessions = useQuery(api.userApi.getUserStudySessions);
   const setStudySessions = useStudyStore((state) => state.setStudySessions);
-  const setInitComplete = useStudyStore((state) => state.setInitComplete);
   const initComplete = useStudyStore((state) => state.initComplete);
   const setUser = useUserStore((state) => state.setUser);
-
-  // Initialize webllm ai engine
-  useEffect(() => {
-    async function handleInitialize() {
-      await initializeEngine();
-      console.log("Engine initialized");
-      setInitComplete(true);
-    }
-
-    handleInitialize();
-  }, [setInitComplete]);
 
   // Sync sessions from Convex to Zustand store
   useEffect(() => {

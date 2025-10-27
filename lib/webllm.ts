@@ -6,18 +6,52 @@ import {
 } from "@mlc-ai/web-llm";
 
 let engine: MLCEngine | null = null;
+let isInitializing = false;
 
-export async function initializeEngine() {
-  // progress callback for debugging
-  const initProgressCallback = (progress: InitProgressReport) => {
-    console.log(progress.text);
-  };
+export async function initializeEngine(
+  progressCallback?: (progress: InitProgressReport) => void
+) {
+  // Prevent duplicate initialization
+  if (engine) {
+    console.log("Engine already initialized");
+    return engine;
+  }
 
-  // Using CreateMLCEngine
-  engine = await CreateMLCEngine("Phi-3.5-mini-instruct-q4f16_1-MLC", {
-    initProgressCallback,
-  });
-  return engine;
+  if (isInitializing) {
+    console.log("Engine initialization already in progress");
+    return null;
+  }
+
+  isInitializing = true;
+
+  try {
+    const initProgressCallback = (progress: InitProgressReport) => {
+      console.log(progress.text);
+      if (progressCallback) {
+        progressCallback(progress);
+      }
+    };
+
+    engine = await CreateMLCEngine("Phi-3.5-mini-instruct-q4f16_1-MLC", {
+      initProgressCallback,
+    });
+    
+    console.log("Engine initialization complete");
+    return engine;
+  } catch (error) {
+    console.error("Failed to initialize engine:", error);
+    throw error;
+  } finally {
+    isInitializing = false;
+  }
+}
+
+export function isEngineInitialized(): boolean {
+  return engine !== null;
+}
+
+export function isEngineInitializing(): boolean {
+  return isInitializing;
 }
 
 export async function getCards(topic: string, count: number) {
