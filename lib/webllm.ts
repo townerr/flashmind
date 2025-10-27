@@ -9,7 +9,7 @@ let engine: MLCEngine | null = null;
 let isInitializing = false;
 
 export async function initializeEngine(
-  progressCallback?: (progress: InitProgressReport) => void
+  progressCallback?: (progress: InitProgressReport) => void,
 ) {
   // Prevent duplicate initialization
   if (engine) {
@@ -35,7 +35,7 @@ export async function initializeEngine(
     engine = await CreateMLCEngine("Phi-3.5-mini-instruct-q4f16_1-MLC", {
       initProgressCallback,
     });
-    
+
     console.log("Engine initialization complete");
     return engine;
   } catch (error) {

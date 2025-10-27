@@ -16,7 +16,11 @@ interface DeckCardProps {
   onDelete: (e: React.MouseEvent, sessionId: Id<"studySessions">) => void;
 }
 
-export default function DeckCard({ session, onStudy, onDelete }: DeckCardProps) {
+export default function DeckCard({
+  session,
+  onStudy,
+  onDelete,
+}: DeckCardProps) {
   const calculateScorePercentage = () => {
     if (session.completedCards === 0) return "0%";
     return `${Math.round((session.correctAnswers / session.completedCards) * 100)}%`;
@@ -100,4 +104,3 @@ export default function DeckCard({ session, onStudy, onDelete }: DeckCardProps) 
     </Card>
   );
 }
-

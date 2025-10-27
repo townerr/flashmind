@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   title: "FlashMind",
   description: "Learn anything, anywhere, anytime.",
   icons: {
-    icon: "/convex.svg",
+    icon: "/flashmind.svg",
   },
 };
 

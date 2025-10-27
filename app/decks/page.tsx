@@ -59,7 +59,7 @@ export default function DecksPage() {
 
   const handleDeleteDeck = async (
     e: React.MouseEvent,
-    sessionId: Id<"studySessions">
+    sessionId: Id<"studySessions">,
   ) => {
     e.stopPropagation();
     await deleteSession(sessionId);

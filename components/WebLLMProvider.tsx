@@ -19,12 +19,12 @@ export default function WebLLMProvider({ children }: WebLLMProviderProps) {
     async function handleInitialize() {
       try {
         console.log("Starting WebLLM engine initialization...");
-        
+
         await initializeEngine((progress) => {
           // Optional: You can update store with progress percentage/message here
           console.log("Init progress:", progress.progress);
         });
-        
+
         console.log("WebLLM engine ready!");
         setInitComplete(true);
       } catch (error) {
@@ -39,4 +39,3 @@ export default function WebLLMProvider({ children }: WebLLMProviderProps) {
 
   return <>{children}</>;
 }
-

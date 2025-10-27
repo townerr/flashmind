@@ -65,7 +65,8 @@ export default function StudySessionModal({
           >
             {isLoading ? (
               <>
-                <Loader2 className="h-5 w-5 animate-spin" /> Loading AI Engine...
+                <Loader2 className="h-5 w-5 animate-spin" /> Loading AI
+                Engine...
               </>
             ) : (
               <>

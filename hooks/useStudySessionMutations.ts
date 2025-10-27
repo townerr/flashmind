@@ -17,14 +17,20 @@ export function useStudySessionMutations() {
 
   // Debounced update function for auto-saving card progress
   const debouncedUpdate = useRef(
-    debounce(async (sessionId: Id<"studySessions">, updates: Partial<StudySession>) => {
-      try {
-        await updateSessionMutation({ sessionId, updates });
-      } catch (error) {
-        console.error("Failed to auto-save session:", error);
-        // On error, could show a toast notification here
-      }
-    }, 500)
+    debounce(
+      async (
+        sessionId: Id<"studySessions">,
+        updates: Partial<StudySession>,
+      ) => {
+        try {
+          await updateSessionMutation({ sessionId, updates });
+        } catch (error) {
+          console.error("Failed to auto-save session:", error);
+          // On error, could show a toast notification here
+        }
+      },
+      500,
+    ),
   ).current;
 
   // Cleanup debounce on unmount
@@ -41,7 +47,7 @@ export function useStudySessionMutations() {
     async (studySession: Omit<StudySession, "_id" | "createdAt">) => {
       try {
         const sessionId = await createMutation({ studySession });
-        
+
         // Optimistically add to store with the sessionId
         const newSession: StudySession = {
           ...studySession,
@@ -60,7 +66,7 @@ export function useStudySessionMutations() {
         throw error;
       }
     },
-    [createMutation]
+    [createMutation],
   );
 
   /**
@@ -70,11 +76,11 @@ export function useStudySessionMutations() {
     (sessionId: Id<"studySessions">, updates: Partial<StudySession>) => {
       // Optimistically update the store immediately using the store's updateSession action
       updateSessionInStore(sessionId, updates);
-      
+
       // Trigger debounced save to database
       debouncedUpdate(sessionId, updates);
     },
-    [debouncedUpdate, updateSessionInStore]
+    [debouncedUpdate, updateSessionInStore],
   );
 
   /**
@@ -86,7 +92,7 @@ export function useStudySessionMutations() {
 
       // Optimistically remove from store
       const newSessions = currentState.studySessions.filter(
-        (s) => s._id?.toString() !== sessionId.toString()
+        (s) => s._id?.toString() !== sessionId.toString(),
       );
 
       // If deleting current session, clear it
@@ -96,7 +102,9 @@ export function useStudySessionMutations() {
       useStudyStore.setState({
         studySessions: newSessions,
         currentSession: shouldClearCurrent ? null : currentState.currentSession,
-        currentCardIndex: shouldClearCurrent ? 0 : currentState.currentCardIndex,
+        currentCardIndex: shouldClearCurrent
+          ? 0
+          : currentState.currentCardIndex,
       });
 
       try {
@@ -112,7 +120,7 @@ export function useStudySessionMutations() {
         throw error;
       }
     },
-    [deleteMutation]
+    [deleteMutation],
   );
 
   return {

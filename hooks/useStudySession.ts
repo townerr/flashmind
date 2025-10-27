@@ -16,10 +16,15 @@ export function useStudySession() {
   const currentSession = useStudyStore((state) => state.currentSession);
   const currentCardIndex = useStudyStore((state) => state.currentCardIndex);
   const setCurrentSession = useStudyStore((state) => state.setCurrentSession);
-  const setCurrentCardIndex = useStudyStore((state) => state.setCurrentCardIndex);
+  const setCurrentCardIndex = useStudyStore(
+    (state) => state.setCurrentCardIndex,
+  );
 
-  const { createSession, updateSession, deleteSession: deleteSessionMutation } =
-    useStudySessionMutations();
+  const {
+    createSession,
+    updateSession,
+    deleteSession: deleteSessionMutation,
+  } = useStudySessionMutations();
 
   /**
    * Generate flashcards using AI
@@ -31,7 +36,7 @@ export function useStudySession() {
       const cards = JSON.parse(response) as Flashcard[];
       return cards;
     },
-    []
+    [],
   );
 
   /**
@@ -52,7 +57,7 @@ export function useStudySession() {
       setCurrentSession(sessionWithId);
       setCurrentCardIndex(0);
     },
-    [generateFlashcards, createSession, setCurrentSession, setCurrentCardIndex]
+    [generateFlashcards, createSession, setCurrentSession, setCurrentCardIndex],
   );
 
   /**
@@ -113,7 +118,7 @@ export function useStudySession() {
       setCurrentSession,
       setCurrentCardIndex,
       updateSession,
-    ]
+    ],
   );
 
   /**
@@ -130,7 +135,7 @@ export function useStudySession() {
 
       setCurrentCardIndex(newIndex);
     },
-    [currentSession, currentCardIndex, setCurrentCardIndex]
+    [currentSession, currentCardIndex, setCurrentCardIndex],
   );
 
   /**
@@ -149,7 +154,7 @@ export function useStudySession() {
       setCurrentSession(session);
       setCurrentCardIndex(0);
     },
-    [setCurrentSession, setCurrentCardIndex]
+    [setCurrentSession, setCurrentCardIndex],
   );
 
   /**
@@ -159,7 +164,7 @@ export function useStudySession() {
     async (sessionId: Id<"studySessions">) => {
       await deleteSessionMutation(sessionId);
     },
-    [deleteSessionMutation]
+    [deleteSessionMutation],
   );
 
   // Cleanup: Save current session when component unmounts or session changes

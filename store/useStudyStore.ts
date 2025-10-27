@@ -13,10 +13,13 @@ interface StudyStore {
   setCurrentSession: (session: StudySession | null) => void;
   setCurrentCardIndex: (index: number) => void;
   setInitComplete: (complete: boolean) => void;
-  
+
   // Update specific session in array
-  updateSession: (sessionId: Id<"studySessions">, updates: Partial<StudySession>) => void;
-  
+  updateSession: (
+    sessionId: Id<"studySessions">,
+    updates: Partial<StudySession>,
+  ) => void;
+
   // Reset all state
   reset: () => void;
 }
@@ -33,8 +36,8 @@ export const useStudyStore = create<StudyStore>((set) => ({
 
   setStudySessions: (sessions) => set({ studySessions: sessions }),
 
-  setCurrentSession: (session) => 
-    set({ 
+  setCurrentSession: (session) =>
+    set({
       currentSession: session,
       currentCardIndex: 0, // Reset card index when changing session
     }),
@@ -48,12 +51,13 @@ export const useStudyStore = create<StudyStore>((set) => ({
       studySessions: state.studySessions.map((session) =>
         session._id?.toString() === sessionId.toString()
           ? { ...session, ...updates }
-          : session
+          : session,
       ),
       // Also update current session if it's the one being updated
-      currentSession: state.currentSession?._id?.toString() === sessionId.toString()
-        ? { ...state.currentSession, ...updates }
-        : state.currentSession,
+      currentSession:
+        state.currentSession?._id?.toString() === sessionId.toString()
+          ? { ...state.currentSession, ...updates }
+          : state.currentSession,
     })),
 
   reset: () => set(initialState),

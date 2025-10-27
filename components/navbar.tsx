@@ -116,7 +116,10 @@ const Navbar = () => {
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem asChild className="focus:bg-neutral-200 focus:outline-none active:bg-neutral-300">
+              <DropdownMenuItem
+                asChild
+                className="focus:bg-neutral-200 focus:outline-none active:bg-neutral-300"
+              >
                 <Link
                   href="/settings"
                   className="flex items-center gap-2 cursor-pointer"

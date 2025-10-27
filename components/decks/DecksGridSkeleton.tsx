@@ -4,7 +4,10 @@ export default function DecksGridSkeleton() {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
       {Array.from({ length: 8 }).map((_, i) => (
-        <Card key={i} className="hover:shadow-lg transition-shadow duration-200 bg-white">
+        <Card
+          key={i}
+          className="hover:shadow-lg transition-shadow duration-200 bg-white"
+        >
           <CardContent className="p-6">
             {/* Header skeleton */}
             <div className="flex justify-between items-start mb-4">
@@ -36,4 +39,3 @@ export default function DecksGridSkeleton() {
     </div>
   );
 }
-
