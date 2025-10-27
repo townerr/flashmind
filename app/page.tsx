@@ -5,6 +5,7 @@ import FlashcardStudy from "@/components/FlashcardStudy";
 import WelcomeScreen from "@/components/WelcomeScreen";
 import { useStudySession } from "@/hooks/useStudySession";
 import { useStudyStore } from "@/store/useStudyStore";
+import { useUserStore } from "@/store/useUserStore";
 import { api } from "@/convex/_generated/api";
 import { useQuery } from "convex/react";
 import { useEffect } from "react";
@@ -23,15 +24,15 @@ export default function Home() {
     deleteSession,
   } = useStudySession();
 
+  // Query user's data and setup state
+  const user = useQuery(api.userApi.getCurrentUser);
+  const sessions = useQuery(api.userApi.getUserStudySessions);
   const setStudySessions = useStudyStore((state) => state.setStudySessions);
   const setInitComplete = useStudyStore((state) => state.setInitComplete);
   const initComplete = useStudyStore((state) => state.initComplete);
+  const setUser = useUserStore((state) => state.setUser);
 
-  // Query user's data
-  const user = useQuery(api.userApi.getCurrentUser);
-  const sessions = useQuery(api.userApi.getUserStudySessions);
-
-  // Initialize AI engine
+  // Initialize webllm ai engine
   useEffect(() => {
     async function handleInitialize() {
       await initializeEngine();
@@ -62,6 +63,13 @@ export default function Home() {
     }
   }, [sessions, setStudySessions]);
 
+  // Sync user data from Convex to Zustand store
+  useEffect(() => {
+    if (user) {
+      setUser(user);
+    }
+  }, [user, setUser]);
+
   return (
     <div className="min-h-[calc(100vh-5rem)] bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 pt-20">
       <div className="flex h-[calc(100vh-5rem)]">
@@ -71,7 +79,6 @@ export default function Home() {
           onCreateSession={createStudySession}
           onResumeSession={resumeSession}
           onDeleteSession={deleteSession}
-          userName={user?.username ?? "Guest"}
           initComplete={initComplete}
         />
 

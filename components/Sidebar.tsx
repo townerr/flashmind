@@ -7,6 +7,7 @@ import { BookOpen, Loader2, Trash2 } from "lucide-react";
 import StudySessionModal from "./StudySessionModal";
 import { StudySession } from "@/types/flashcard";
 import { Id } from "@/convex/_generated/dataModel";
+import { useUserStore } from "@/store/useUserStore";
 
 interface SidebarProps {
   studySessions: StudySession[];
@@ -14,7 +15,6 @@ interface SidebarProps {
   onCreateSession: (topic: string, numCards: number) => Promise<void>;
   onResumeSession: (session: StudySession) => void;
   onDeleteSession: (sessionId: Id<"studySessions">) => void;
-  userName: string;
   initComplete: boolean;
 }
 
@@ -24,9 +24,11 @@ export default function Sidebar({
   onCreateSession,
   onResumeSession,
   onDeleteSession,
-  userName,
   initComplete,
 }: SidebarProps) {
+  // Get user data from store
+  const userName = useUserStore((state) => state.user?.username ?? "Guest");
+
   const handleDeleteSession = (e: React.MouseEvent, sessionId: string) => {
     e.stopPropagation(); // Prevent triggering the card click
     onDeleteSession(sessionId as Id<"studySessions">);
