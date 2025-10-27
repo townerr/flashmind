@@ -37,6 +37,7 @@ export async function getCards(topic: string, count: number) {
                 Check your spelling and grammar before returning the JSON array.
                 Make sure the first JSON field is "question" and the second field is "answer".
                 Do not include any markdown formatting (such as backticks) for code blocks.
+                Make sure the JSON complies with javascripts JSON.parse() function rules, dont provide invalid characters in the JSON.
             `,
     },
   ];
