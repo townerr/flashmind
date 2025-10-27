@@ -16,10 +16,12 @@ import { Plus, Loader2 } from "lucide-react";
 
 interface StudySessionModalProps {
   onCreateSession: (topic: string, numCards: number) => Promise<void>;
+  variant?: "default" | "icon";
 }
 
 export default function StudySessionModal({
   onCreateSession,
+  variant = "default",
 }: StudySessionModalProps) {
   const [topic, setTopic] = useState("");
   const [numCards, setNumCards] = useState(5);
@@ -52,13 +54,23 @@ export default function StudySessionModal({
   return (
     <Dialog open={isModalOpen} onOpenChange={handleModalClose}>
       <DialogTrigger asChild>
-        <Button
-          className="w-full mb-6 text-white bg-blue-600 hover:bg-blue-600/90 active:bg-blue-700"
-          size="lg"
-        >
-          <Plus className="h-5 w-5 mr-2" />
-          Create New Study Session
-        </Button>
+        {variant === "icon" ? (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="w-auto mt-1 px-2 text-white hover:text-white bg-blue-600 hover:bg-blue-600/90 active:bg-blue-600/80"
+          >
+            <Plus className="h-5 w-5" /> Create Deck
+          </Button>
+        ) : (
+          <Button
+            className="w-full mb-6 text-white bg-blue-600 hover:bg-blue-600/90 active:bg-blue-700"
+            size="lg"
+          >
+            <Plus className="h-5 w-5 mr-2" />
+            Create New Study Session
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
