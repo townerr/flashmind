@@ -37,7 +37,7 @@ const Navbar = () => {
 
   const handleSignOut = async () => {
     await signOut();
-    router.push("/signin");
+    router.push("/");
   };
 
   return (
@@ -56,28 +56,32 @@ const Navbar = () => {
       </Link>
 
       <div className="flex items-center gap-4">
-        {/* Navigation Links */}
-        <Link
-          href="/"
-          className="hidden sm:flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-200 rounded-full p-2 transition-colors"
-        >
-          <BookOpen className="h-4 w-4" />
-          Study
-        </Link>
-        <Link
-          href="/decks"
-          className="hidden sm:flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-200 rounded-full p-2 transition-colors"
-        >
-          <BookOpen className="h-4 w-4" />
-          My Decks
-        </Link>
-        <Link
-          href="/browse"
-          className="hidden sm:flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-200 rounded-full p-2 transition-colors"
-        >
-          <Globe className="h-4 w-4" />
-          Browse Decks
-        </Link>
+        {/* Navigation Links - Only show when authenticated */}
+        {isAuthenticated && (
+          <>
+            <Link
+              href="/"
+              className="hidden sm:flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-200 rounded-full p-2 transition-colors"
+            >
+              <BookOpen className="h-4 w-4" />
+              Study
+            </Link>
+            <Link
+              href="/decks"
+              className="hidden sm:flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-200 rounded-full p-2 transition-colors"
+            >
+              <BookOpen className="h-4 w-4" />
+              My Decks
+            </Link>
+            <Link
+              href="/browse"
+              className="hidden sm:flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-200 rounded-full p-2 transition-colors"
+            >
+              <Globe className="h-4 w-4" />
+              Browse Decks
+            </Link>
+          </>
+        )}
 
         {/* User Dropdown */}
         {isAuthenticated && user ? (
