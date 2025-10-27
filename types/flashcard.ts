@@ -14,4 +14,5 @@ export interface StudySession {
   cards: Flashcard[];
   completedCards: number;
   correctAnswers: number;
+  createdAt?: Date;
 }

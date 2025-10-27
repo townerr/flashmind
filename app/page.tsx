@@ -4,14 +4,13 @@ import Sidebar from "@/components/Sidebar";
 import FlashcardStudy from "@/components/FlashcardStudy";
 import WelcomeScreen from "@/components/WelcomeScreen";
 import { useStudySession } from "@/hooks/useStudySession";
+import { useStudyStore } from "@/store/useStudyStore";
 import { api } from "@/convex/_generated/api";
 import { useQuery } from "convex/react";
-import { StudySession } from "@/types/flashcard";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { initializeEngine } from "@/lib/webllm";
 
 export default function Home() {
-  const [initComplete, setInitComplete] = useState(false);
   const {
     studySessions,
     currentSession,
@@ -22,13 +21,17 @@ export default function Home() {
     completeSession,
     resumeSession,
     deleteSession,
-    setStudySessions,
   } = useStudySession();
 
-  //init ai engine and query user's data
+  const setStudySessions = useStudyStore((state) => state.setStudySessions);
+  const setInitComplete = useStudyStore((state) => state.setInitComplete);
+  const initComplete = useStudyStore((state) => state.initComplete);
+
+  // Query user's data
   const user = useQuery(api.userApi.getCurrentUser);
   const sessions = useQuery(api.userApi.getUserStudySessions);
 
+  // Initialize AI engine
   useEffect(() => {
     async function handleInitialize() {
       await initializeEngine();
@@ -37,11 +40,25 @@ export default function Home() {
     }
 
     handleInitialize();
-  }, []);
+  }, [setInitComplete]);
 
+  // Sync sessions from Convex to Zustand store
   useEffect(() => {
     if (sessions) {
-      setStudySessions(sessions as StudySession[]);
+      const mappedSessions = sessions.map((session) => ({
+        _id: session._id,
+        topic: session.topic,
+        totalCards: session.totalCards,
+        cards: session.cards.map((card) => ({
+          id: card.id || "",
+          question: card.question,
+          answer: card.answer,
+          answeredCorrect: card.answeredCorrect,
+        })),
+        completedCards: session.completedCards,
+        correctAnswers: session.correctAnswers,
+      }));
+      setStudySessions(mappedSessions);
     }
   }, [sessions, setStudySessions]);
 
@@ -50,7 +67,7 @@ export default function Home() {
       <div className="flex h-[calc(100vh-5rem)]">
         <Sidebar
           studySessions={studySessions}
-          currentSessionId={currentSession?._id}
+          currentSessionId={currentSession?._id || ""}
           onCreateSession={createStudySession}
           onResumeSession={resumeSession}
           onDeleteSession={deleteSession}

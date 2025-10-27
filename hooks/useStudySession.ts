@@ -1,147 +1,174 @@
 "use client";
 
-import { useState } from "react";
 import { StudySession, Flashcard } from "@/types/flashcard";
-import { useMutation } from "convex/react";
-import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { getCards } from "@/lib/webllm";
+import { useStudyStore } from "@/store/useStudyStore";
+import { useStudySessionMutations } from "./useStudySessionMutations";
+import { useCallback, useEffect } from "react";
 
+/**
+ * Hook for managing study session business logic
+ * Uses Zustand for state management and mutations hook for persistence
+ */
 export function useStudySession() {
-  const [studySessions, setStudySessions] = useState<StudySession[]>([]);
-  const [currentSession, setCurrentSession] = useState<StudySession | null>(
-    null,
+  const studySessions = useStudyStore((state) => state.studySessions);
+  const currentSession = useStudyStore((state) => state.currentSession);
+  const currentCardIndex = useStudyStore((state) => state.currentCardIndex);
+  const setCurrentSession = useStudyStore((state) => state.setCurrentSession);
+  const setCurrentCardIndex = useStudyStore((state) => state.setCurrentCardIndex);
+
+  const { createSession, updateSession, deleteSession: deleteSessionMutation } =
+    useStudySessionMutations();
+
+  /**
+   * Generate flashcards using AI
+   */
+  const generateFlashcards = useCallback(
+    async (topic: string, count: number): Promise<Flashcard[]> => {
+      const response = await getCards(topic, count);
+      if (!response) return [];
+      const cards = JSON.parse(response) as Flashcard[];
+      return cards;
+    },
+    []
   );
-  const [currentCardIndex, setCurrentCardIndex] = useState(0);
-  const saveStudySession = useMutation(api.userApi.createUserStudySession);
-  const deleteStudySession = useMutation(api.userApi.deleteUserStudySession);
 
-  const generateFlashcards = async (
-    topic: string,
-    count: number,
-  ): Promise<Flashcard[]> => {
-    // Get flashcards from AI
-    const response = await getCards(topic, count);
-    if (!response) return [];
-    const cards = JSON.parse(response) as Flashcard[];
-    return cards;
-  };
+  /**
+   * Create a new study session
+   */
+  const createStudySession = useCallback(
+    async (topic: string, numCards: number) => {
+      const cards = await generateFlashcards(topic, numCards);
+      const newStudySession: Omit<StudySession, "_id" | "createdAt"> = {
+        topic,
+        totalCards: numCards,
+        cards,
+        completedCards: 0,
+        correctAnswers: 0,
+      };
 
-  const createStudySession = async (topic: string, numCards: number) => {
-    const cards = await generateFlashcards(topic, numCards);
-    const newStudySession: StudySession = {
-      topic,
-      totalCards: numCards,
-      cards,
-      completedCards: 0,
-      correctAnswers: 0,
-    };
+      const sessionWithId = await createSession(newStudySession);
+      setCurrentSession(sessionWithId);
+      setCurrentCardIndex(0);
+    },
+    [generateFlashcards, createSession, setCurrentSession, setCurrentCardIndex]
+  );
 
-    setStudySessions((prev) => [newStudySession, ...prev]);
-    setCurrentSession(newStudySession);
-    setCurrentCardIndex(0);
+  /**
+   * Mark a card as correct or incorrect
+   * Updates count only on first answer, allows changing answer with proper count adjustment
+   */
+  const markCard = useCallback(
+    (isCorrect: boolean) => {
+      if (!currentSession || !currentSession._id) return;
 
-    //save to db
-    await saveStudySession({
-      studySession: {
-        topic: newStudySession.topic,
-        totalCards: newStudySession.totalCards,
-        cards: newStudySession.cards,
-        completedCards: newStudySession.completedCards,
-        correctAnswers: newStudySession.correctAnswers,
-      },
-    });
-  };
+      const currentCard = currentSession.cards[currentCardIndex];
+      const wasAlreadyAnswered = currentCard.answeredCorrect !== undefined;
+      const previousAnswerWasCorrect = currentCard.answeredCorrect === true;
 
-  const markCard = (isCorrect: boolean) => {
-    if (!currentSession) return;
+      const updatedCards = [...currentSession.cards];
+      updatedCards[currentCardIndex] = {
+        ...updatedCards[currentCardIndex],
+        answeredCorrect: isCorrect,
+      };
 
-    const currentCard = currentSession.cards[currentCardIndex];
-    const wasAlreadyAnswered = currentCard.answeredCorrect !== undefined;
-    const previousAnswerWasCorrect = currentCard.answeredCorrect === true;
+      // Calculate changes to counts
+      const completedCardsChange = wasAlreadyAnswered ? 0 : 1;
+      let correctAnswersChange = 0;
 
-    const updatedCards = [...currentSession.cards];
-    updatedCards[currentCardIndex] = {
-      ...updatedCards[currentCardIndex],
-      answeredCorrect: isCorrect,
-    };
-
-    // Calculate the changes needed
-    const completedCardsChange = wasAlreadyAnswered ? 0 : 1; // Only increment if not already answered
-    let correctAnswersChange = 0;
-
-    if (!wasAlreadyAnswered) {
-      // First time answering this card
-      correctAnswersChange = isCorrect ? 1 : 0;
-    } else if (previousAnswerWasCorrect !== isCorrect) {
-      // Changed answer
-      if (isCorrect) {
-        // Changed from incorrect to correct
-        correctAnswersChange = 1;
-      } else {
-        // Changed from correct to incorrect
-        correctAnswersChange = -1;
+      if (!wasAlreadyAnswered) {
+        correctAnswersChange = isCorrect ? 1 : 0;
+      } else if (previousAnswerWasCorrect !== isCorrect) {
+        if (isCorrect) {
+          correctAnswersChange = 1; // Changed from incorrect to correct
+        } else {
+          correctAnswersChange = -1; // Changed from correct to incorrect
+        }
       }
-    }
 
-    const updatedSession = {
-      ...currentSession,
-      cards: updatedCards,
-      completedCards: currentSession.completedCards + completedCardsChange,
-      correctAnswers: currentSession.correctAnswers + correctAnswersChange,
-    };
+      const updatedSession: StudySession = {
+        ...currentSession,
+        cards: updatedCards,
+        completedCards: currentSession.completedCards + completedCardsChange,
+        correctAnswers: currentSession.correctAnswers + correctAnswersChange,
+      };
 
-    setCurrentSession(updatedSession);
-    setStudySessions((prev) =>
-      prev.map((session) =>
-        session._id === updatedSession._id ? updatedSession : session,
-      ),
-    );
+      // Optimistically update in store and trigger auto-save
+      setCurrentSession(updatedSession);
+      updateSession(currentSession._id, {
+        cards: updatedCards,
+        completedCards: updatedSession.completedCards,
+        correctAnswers: updatedSession.correctAnswers,
+      });
 
-    // Move to next card
-    if (currentCardIndex < currentSession.cards.length - 1) {
-      setCurrentCardIndex((prev) => prev + 1);
-    }
-  };
+      // Move to next card
+      if (currentCardIndex < currentSession.cards.length - 1) {
+        setCurrentCardIndex(currentCardIndex + 1);
+      }
+    },
+    [
+      currentSession,
+      currentCardIndex,
+      setCurrentSession,
+      setCurrentCardIndex,
+      updateSession,
+    ]
+  );
 
-  const navigateCard = (direction: "prev" | "next") => {
-    if (!currentSession) return;
+  /**
+   * Navigate to previous or next card
+   */
+  const navigateCard = useCallback(
+    (direction: "prev" | "next") => {
+      if (!currentSession) return;
 
-    const newIndex =
-      direction === "prev"
-        ? Math.max(0, currentCardIndex - 1)
-        : Math.min(currentSession.cards.length - 1, currentCardIndex + 1);
+      const newIndex =
+        direction === "prev"
+          ? Math.max(0, currentCardIndex - 1)
+          : Math.min(currentSession.cards.length - 1, currentCardIndex + 1);
 
-    setCurrentCardIndex(newIndex);
-  };
+      setCurrentCardIndex(newIndex);
+    },
+    [currentSession, currentCardIndex, setCurrentCardIndex]
+  );
 
-  const completeSession = () => {
+  /**
+   * Complete the current study session
+   */
+  const completeSession = useCallback(() => {
     setCurrentSession(null);
     setCurrentCardIndex(0);
-  };
+  }, [setCurrentSession, setCurrentCardIndex]);
 
-  const resumeSession = (session: StudySession) => {
-    setCurrentSession(session);
-    setCurrentCardIndex(0);
-  };
-
-  const deleteSession = async (sessionId: Id<"studySessions">) => {
-    setStudySessions((prev) =>
-      prev.filter(
-        (session) => session._id?.toString() !== sessionId.toString(),
-      ),
-    );
-
-    // If the deleted session is the current session, clear it
-    if (currentSession?._id?.toString() === sessionId.toString()) {
-      setCurrentSession(null);
+  /**
+   * Resume a study session
+   */
+  const resumeSession = useCallback(
+    (session: StudySession) => {
+      setCurrentSession(session);
       setCurrentCardIndex(0);
-    }
+    },
+    [setCurrentSession, setCurrentCardIndex]
+  );
 
-    await deleteStudySession({
-      studySessionId: sessionId,
-    });
-  };
+  /**
+   * Delete a study session
+   */
+  const deleteSession = useCallback(
+    async (sessionId: Id<"studySessions">) => {
+      await deleteSessionMutation(sessionId);
+    },
+    [deleteSessionMutation]
+  );
+
+  // Cleanup: Save current session when component unmounts or session changes
+  useEffect(() => {
+    return () => {
+      // This will be called when the component unmounts
+      // The debounced save in mutations hook handles persistence
+    };
+  }, [currentSession]);
 
   return {
     studySessions,
@@ -153,6 +180,5 @@ export function useStudySession() {
     completeSession,
     resumeSession,
     deleteSession,
-    setStudySessions,
   };
 }

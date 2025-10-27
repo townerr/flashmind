@@ -67,6 +67,54 @@ export const getUserStudySessions = query({
   },
 });
 
+export const updateUserStudySession = mutation({
+  args: {
+    sessionId: v.id("studySessions"),
+    updates: v.object({
+      cards: v.optional(
+        v.array(
+          v.object({
+            id: v.optional(v.string()),
+            question: v.string(),
+            answer: v.string(),
+            answeredCorrect: v.optional(v.boolean()),
+          }),
+        ),
+      ),
+      completedCards: v.optional(v.number()),
+      correctAnswers: v.optional(v.number()),
+    }),
+  },
+  handler: async (ctx, args) => {
+    const currentUserId = await getAuthUserId(ctx);
+    if (currentUserId === null) {
+      throw new Error("User not authenticated");
+    }
+
+    const studySession = await ctx.db.get(args.sessionId);
+    if (!studySession) {
+      throw new Error("Study session not found");
+    }
+
+    if (currentUserId !== studySession.userId) {
+      throw new Error("User not authorized to update this study session");
+    }
+
+    const updateData: any = {};
+    if (args.updates.cards !== undefined) {
+      updateData.cards = args.updates.cards;
+    }
+    if (args.updates.completedCards !== undefined) {
+      updateData.completedCards = args.updates.completedCards;
+    }
+    if (args.updates.correctAnswers !== undefined) {
+      updateData.correctAnswers = args.updates.correctAnswers;
+    }
+
+    return await ctx.db.patch(args.sessionId, updateData);
+  },
+});
+
 export const deleteUserStudySession = mutation({
   args: {
     studySessionId: v.id("studySessions"),
