@@ -17,4 +17,5 @@ Try out the [FlashMind Demo](INSERT DEMO LINK)
 - [WebLLM](https://webllm.mlc.ai/) for running ai nodels in the browser.
 - [Tailwind](https://tailwindcss.com/) for styling.
 - [Shadcn](https://ui.shadcn.com/) for stlying.
+- [Zustand](https://zustand-demo.pmnd.rs/) for state management.
 - [Fly.io](https://fly.io/) for hosting.
