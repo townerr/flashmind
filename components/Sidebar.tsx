@@ -3,7 +3,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { BookOpen, Loader2, Trash2 } from "lucide-react";
+import { BookOpen, Trash2 } from "lucide-react";
 import StudySessionModal from "./StudySessionModal";
 import { StudySession } from "@/types/flashcard";
 import { Id } from "@/convex/_generated/dataModel";
@@ -46,17 +46,10 @@ export default function Sidebar({
       <Separator className="mb-6" />
 
       {/* Create New Session Modal */}
-      {initComplete ? (
-        <StudySessionModal onCreateSession={onCreateSession} />
-      ) : (
-        <Button
-          disabled
-          className="w-full mb-6 text-white bg-blue-600 hover:bg-blue-600/90 active:bg-blue-700"
-        >
-          <Loader2 className="h-4 w-4 animate-spin" />
-          Loading AI Engine...
-        </Button>
-      )}
+      <StudySessionModal
+        onCreateSession={onCreateSession}
+        isLoading={!initComplete}
+      />
 
       {/* Study Sessions History */}
       <div>

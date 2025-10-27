@@ -17,11 +17,13 @@ import { Plus, Loader2 } from "lucide-react";
 interface StudySessionModalProps {
   onCreateSession: (topic: string, numCards: number) => Promise<void>;
   variant?: "default" | "icon";
+  isLoading?: boolean;
 }
 
 export default function StudySessionModal({
   onCreateSession,
   variant = "default",
+  isLoading = false,
 }: StudySessionModalProps) {
   const [topic, setTopic] = useState("");
   const [numCards, setNumCards] = useState(5);
@@ -58,17 +60,36 @@ export default function StudySessionModal({
           <Button
             variant="ghost"
             size="icon"
-            className="w-auto mt-1 px-2 text-white hover:text-white bg-blue-600 hover:bg-blue-600/90 active:bg-blue-600/80"
+            className="w-auto mt-1 px-2 text-white hover:text-white bg-blue-600 hover:bg-blue-600/90 active:bg-blue-600/80 disabled:opacity-50"
+            disabled={isLoading}
           >
-            <Plus className="h-5 w-5" /> Create Deck
+            {isLoading ? (
+              <>
+                <Loader2 className="h-5 w-5 animate-spin" /> Loading AI Engine...
+              </>
+            ) : (
+              <>
+                <Plus className="h-5 w-5" /> Create Deck
+              </>
+            )}
           </Button>
         ) : (
           <Button
             className="w-full mb-6 text-white bg-blue-600 hover:bg-blue-600/90 active:bg-blue-700"
             size="lg"
+            disabled={isLoading}
           >
-            <Plus className="h-5 w-5 mr-2" />
-            Create New Study Session
+            {isLoading ? (
+              <>
+                <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                Loading AI Engine...
+              </>
+            ) : (
+              <>
+                <Plus className="h-5 w-5 mr-2" />
+                Create New Study Session
+              </>
+            )}
           </Button>
         )}
       </DialogTrigger>
