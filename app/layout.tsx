@@ -5,6 +5,7 @@ import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
 import ConvexClientProvider from "@/components/ConvexClientProvider";
 import WebLLMProvider from "@/components/WebLLMProvider";
 import Navbar from "@/components/navbar";
+import { Toaster } from "sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -39,6 +40,7 @@ export default function RootLayout({
             <WebLLMProvider>
               <Navbar />
               <main>{children}</main>
+              <Toaster />
             </WebLLMProvider>
           </ConvexClientProvider>
         </body>

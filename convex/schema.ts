@@ -33,5 +33,7 @@ export default defineSchema({
     completedCards: v.number(),
     correctAnswers: v.number(),
     isPublic: v.optional(v.boolean()),
-  }).index("by_userId", ["userId"]),
+  })
+    .index("by_userId", ["userId"])
+    .index("by_isPublic", ["isPublic"]),
 });

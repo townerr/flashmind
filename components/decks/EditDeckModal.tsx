@@ -175,7 +175,7 @@ export default function EditDeckModal({
                   </div>
 
                   <div className="space-y-3">
-                    <div> 
+                    <div>
                       <label className="text-xs text-gray-600 mb-1 block">
                         Question
                       </label>

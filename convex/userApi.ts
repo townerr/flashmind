@@ -169,3 +169,70 @@ export const deleteUserStudySession = mutation({
     return await ctx.db.delete(args.studySessionId);
   },
 });
+
+export const getPublicStudySessions = query({
+  args: {},
+  handler: async (ctx) => {
+    const publicSessions = await ctx.db
+      .query("studySessions")
+      .filter((q) => q.eq(q.field("isPublic"), true))
+      .collect();
+
+    // Fetch user data for each session
+    const sessionsWithUsers = await Promise.all(
+      publicSessions.map(async (session) => {
+        const user = await ctx.db.get(session.userId);
+        return {
+          ...session,
+          creatorName:
+            user?.username || user?.name || user?.email || "Anonymous",
+        };
+      }),
+    );
+
+    return sessionsWithUsers;
+  },
+});
+
+export const copyPublicDeck = mutation({
+  args: {
+    sessionId: v.id("studySessions"),
+  },
+  handler: async (ctx, args) => {
+    const currentUserId = await getAuthUserId(ctx);
+    if (!currentUserId) {
+      throw new Error("User not authenticated");
+    }
+
+    const currentUser = await ctx.db.get(currentUserId);
+    if (currentUser?.isAnonymous) {
+      throw new Error("Guests are not authorized to copy a study session");
+    }
+
+    const originalSession = await ctx.db.get(args.sessionId);
+    if (!originalSession) {
+      throw new Error("Study session not found");
+    }
+
+    if (!originalSession.isPublic) {
+      throw new Error("This deck is not public");
+    }
+
+    // Create a copy with reset progress
+    return await ctx.db.insert("studySessions", {
+      userId: currentUserId,
+      topic: originalSession.topic,
+      totalCards: originalSession.totalCards,
+      cards: originalSession.cards.map((card) => ({
+        id: card.id,
+        question: card.question,
+        answer: card.answer,
+        // Reset progress
+        answeredCorrect: undefined,
+      })),
+      completedCards: 0,
+      correctAnswers: 0,
+      isPublic: false, // Copied decks are private by default
+    });
+  },
+});
