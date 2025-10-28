@@ -1,21 +1,31 @@
 "use client";
 
 import { useEffect } from "react";
-import { initializeEngine } from "@/lib/webllm";
+import { initializeEngine, isEngineInitialized } from "@/lib/webllm";
 import { useStudyStore } from "@/store/useStudyStore";
+import { useConvexAuth } from "convex/react";
 
 interface WebLLMProviderProps {
   children: React.ReactNode;
 }
 
 /**
- * Provider component that initializes the WebLLM engine once when the app loads
+ * Provider component that initializes the WebLLM engine once when the user is authenticated
  * and maintains it across all pages and navigation.
  */
 export default function WebLLMProvider({ children }: WebLLMProviderProps) {
   const setInitComplete = useStudyStore((state) => state.setInitComplete);
+  const { isAuthenticated } = useConvexAuth();
 
   useEffect(() => {
+    // Only initialize if user is authenticated and engine hasn't been initialized yet
+    if (!isAuthenticated || isEngineInitialized()) {
+      if (!isAuthenticated) {
+        console.log("Waiting for user authentication before initializing WebLLM...");
+      }
+      return;
+    }
+
     async function handleInitialize() {
       try {
         console.log("Starting WebLLM engine initialization...");
@@ -35,7 +45,7 @@ export default function WebLLMProvider({ children }: WebLLMProviderProps) {
     }
 
     handleInitialize();
-  }, []); // Empty deps - only run once on mount
+  }, [isAuthenticated, setInitComplete]);
 
   return <>{children}</>;
 }
