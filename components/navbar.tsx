@@ -14,7 +14,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Settings, LogOut, BookOpen, Globe } from "lucide-react";
+import { Settings, LogOut, BookOpen, Globe, Menu } from "lucide-react";
 import { useAuthActions } from "@convex-dev/auth/react";
 import { useRouter } from "next/navigation";
 import { Button } from "./ui/button";
@@ -52,11 +52,11 @@ const Navbar = () => {
           width={45}
           height={45}
         />
-        FlashMind
+        <span className="hidden sm:inline">FlashMind</span>
       </Link>
 
       <div className="flex items-center gap-4">
-        {/* Navigation Links - Only show when authenticated */}
+        {/* Desktop Navigation Links - Only show when authenticated */}
         {isAuthenticated && (
           <>
             <Link
@@ -83,13 +83,44 @@ const Navbar = () => {
           </>
         )}
 
+        {/* Mobile Menu */}
+        {isAuthenticated && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="sm:hidden">
+                <Menu className="h-6 w-6" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48 bg-white">
+              <DropdownMenuItem asChild className="cursor-pointer">
+                <Link href="/" className="flex items-center gap-2">
+                  <BookOpen className="h-4 w-4" />
+                  Study
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild className="cursor-pointer">
+                <Link href="/decks" className="flex items-center gap-2">
+                  <BookOpen className="h-4 w-4" />
+                  My Decks
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild className="cursor-pointer">
+                <Link href="/browse" className="flex items-center gap-2">
+                  <Globe className="h-4 w-4" />
+                  Browse Decks
+                </Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
+
         {/* User Dropdown */}
         {isAuthenticated && user ? (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
-                className="flex items-center gap-3 hover:bg-gray-200 rounded-full"
+                className="flex sm:pr-3 px-0 pl-0 items-center gap-3 hover:bg-gray-200 rounded-full"
               >
                 <Avatar>
                   <AvatarImage src={user.image} alt={user.username} />
