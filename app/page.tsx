@@ -101,7 +101,10 @@ export default function Home() {
                 <Menu className="h-5 w-5" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-72 max-h-[80vh] overflow-y-auto bg-white">
+            <DropdownMenuContent
+              align="start"
+              className="w-72 max-h-[80vh] overflow-y-auto bg-white"
+            >
               <div className="p-2">
                 {/* Create New Session */}
                 <div className="mb-4">
@@ -110,7 +113,7 @@ export default function Home() {
                     isLoading={!initComplete}
                   />
                 </div>
-                
+
                 {/* Study Sessions List */}
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3 px-3">
@@ -132,7 +135,8 @@ export default function Home() {
                             {session.topic}
                           </h4>
                           <p className="text-xs text-gray-600 dark:text-gray-400">
-                            {session.completedCards}/{session.totalCards} completed
+                            {session.completedCards}/{session.totalCards}{" "}
+                            completed
                           </p>
                         </div>
                         <Button
