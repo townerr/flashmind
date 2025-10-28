@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, Suspense } from "react";
+import { useState, useMemo, Suspense, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
@@ -15,9 +15,19 @@ function BrowseContent() {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
   const [copyingId, setCopyingId] = useState<string | null>(null);
+  const [minLoadTimePassed, setMinLoadTimePassed] = useState(false);
 
   const publicSessions = useQuery(api.userApi.getPublicStudySessions);
   const copyDeckMutation = useMutation(api.userApi.copyPublicDeck);
+
+  // Ensure minimum loading time of 500ms for better UX
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setMinLoadTimePassed(true);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   // Client-side filtering by topic
   const filteredSessions = useMemo(() => {
@@ -45,7 +55,8 @@ function BrowseContent() {
     }
   };
 
-  if (!publicSessions) {
+  // Show skeleton if still loading OR if minimum load time hasn't passed
+  if (!publicSessions || !minLoadTimePassed) {
     return <DecksGridSkeleton />;
   }
 
