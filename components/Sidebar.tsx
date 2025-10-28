@@ -39,7 +39,7 @@ export default function Sidebar({
       <div className="flex items-center gap-2 mb-6">
         <BookOpen className="h-6 w-6 text-blue-600" />
         <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-          {userName}&apos;s Study Deck
+          {userName}&apos;s Study Hub
         </h1>
       </div>
 
@@ -54,7 +54,7 @@ export default function Sidebar({
       {/* Study Sessions History */}
       <div>
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-          Study Sessions
+          Study Decks
         </h3>
         <div className="space-y-3">
           {studySessions.map((session) => (

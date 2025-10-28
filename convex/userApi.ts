@@ -71,6 +71,7 @@ export const updateUserStudySession = mutation({
   args: {
     sessionId: v.id("studySessions"),
     updates: v.object({
+      topic: v.optional(v.string()),
       cards: v.optional(
         v.array(
           v.object({
@@ -83,6 +84,7 @@ export const updateUserStudySession = mutation({
       ),
       completedCards: v.optional(v.number()),
       correctAnswers: v.optional(v.number()),
+      isPublic: v.optional(v.boolean()),
     }),
   },
   handler: async (ctx, args) => {
@@ -101,6 +103,9 @@ export const updateUserStudySession = mutation({
     }
 
     const updateData: any = {};
+    if (args.updates.topic !== undefined) {
+      updateData.topic = args.updates.topic;
+    }
     if (args.updates.cards !== undefined) {
       updateData.cards = args.updates.cards;
     }
@@ -110,8 +115,35 @@ export const updateUserStudySession = mutation({
     if (args.updates.correctAnswers !== undefined) {
       updateData.correctAnswers = args.updates.correctAnswers;
     }
+    if (args.updates.isPublic !== undefined) {
+      updateData.isPublic = args.updates.isPublic;
+    }
 
     return await ctx.db.patch(args.sessionId, updateData);
+  },
+});
+
+export const toggleSessionPublic = mutation({
+  args: {
+    sessionId: v.id("studySessions"),
+    isPublic: v.boolean(),
+  },
+  handler: async (ctx, args) => {
+    const currentUserId = await getAuthUserId(ctx);
+    if (currentUserId === null) {
+      throw new Error("User not authenticated");
+    }
+
+    const studySession = await ctx.db.get(args.sessionId);
+    if (!studySession) {
+      throw new Error("Study session not found");
+    }
+
+    if (currentUserId !== studySession.userId) {
+      throw new Error("User not authorized to update this study session");
+    }
+
+    return await ctx.db.patch(args.sessionId, { isPublic: args.isPublic });
   },
 });
 

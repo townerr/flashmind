@@ -15,4 +15,5 @@ export interface StudySession {
   completedCards: number;
   correctAnswers: number;
   createdAt?: Date;
+  isPublic?: boolean;
 }
