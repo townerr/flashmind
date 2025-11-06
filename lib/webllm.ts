@@ -8,6 +8,28 @@ import {
 let engine: MLCEngine | null = null;
 let isInitializing = false;
 
+async function search(query: string) {
+  try {
+    const response = await fetch("/api/search", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ query }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Search API returned ${response.status}`);
+    }
+
+    const results = await response.json();
+    return results;
+  } catch (error) {
+    console.error("Error searching for context:", error);
+    return null;
+  }
+}
+
 export async function initializeEngine(
   progressCallback?: (progress: InitProgressReport) => void,
 ) {
@@ -60,6 +82,13 @@ export async function getCards(topic: string, count: number) {
     return null;
   }
 
+  const context = await search(topic);
+  console.log(context);
+  if (!context) {
+    console.error("No context found");
+    return null;
+  }
+
   const messages: ChatCompletionMessageParam[] = [
     {
       role: "user",
@@ -72,6 +101,7 @@ export async function getCards(topic: string, count: number) {
                 Make sure the first JSON field is "question" and the second field is "answer".
                 Do not include any markdown formatting (such as backticks) for code blocks.
                 Make sure the JSON complies with javascripts JSON.parse() function rules, dont provide invalid characters in the JSON.
+                To perform a more accurate search, use the following context from the web: ${context.results.map((result: { title: string }) => result.title).join("\n")}.
             `,
     },
   ];
