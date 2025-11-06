@@ -19,3 +19,4 @@ Try out the [FlashMind Demo](INSERT DEMO LINK)
 - [Shadcn](https://ui.shadcn.com/) for stlying.
 - [Zustand](https://zustand-demo.pmnd.rs/) for state management.
 - [Fly.io](https://fly.io/) for hosting.
+- [SearXNG](https://docs.searxng.org) for web search.
