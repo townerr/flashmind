@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://i.imgur.com/mGppYyy.png" width="250px" height="250px">
+  <img src="https://i.imgur.com/Myi3Ucj.png" width="250px" height="250px">
 <p>
 
 # FlashMind AI
